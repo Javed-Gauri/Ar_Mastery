@@ -3,128 +3,266 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Augmented Reality AI Protocol Generator</title>
+    <title>AR Mastery Hub - Full Feature Set</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Load Three.js for potential future 3D/AR elements or visualizations -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
-        /* Custom styles for aesthetic enhancements */
+        /* --- CODE EDITOR THEME VARIABLES --- */
+        :root {
+            --color-bg-body: #1A1B26; /* Dark Navy */
+            --color-bg-card: #282c34; /* Deep Charcoal */
+            --color-text-light: #E0E6F0; /* Off-White Text */
+            --color-accent-green: #00C853; /* Vibrant Green (freeCodeCamp inspired) */
+            --color-accent-blue: #3E8EFF; /* Codecademy Blue */
+            --color-output-bg: #1f232a; /* Slightly darker output box */
+            --color-output-border: #00C853;
+        }
+
+        /* Base Body and Container Styling */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f4f7f9;
+            background-color: var(--color-bg-body);
+            color: var(--color-text-light);
         }
         .container-card {
-            background-color: #ffffff;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background-color: var(--color-bg-card);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid #3c414a; /* Subtle border */
         }
+        
+        /* Primary Action Button (Vibrant Green) */
         .btn-primary {
-            background-image: linear-gradient(to right, #0575E6, #021B79);
-            transition: all 0.3s ease;
+            background-color: var(--color-accent-green);
+            color: var(--color-bg-body); /* Dark text on bright button */
+            transition: all 0.2s ease;
         }
         .btn-primary:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
+            box-shadow: 0 0 15px rgba(0, 200, 83, 0.5); /* Glowing effect */
+            transform: translateY(-2px);
         }
+        
+        /* AI Output Box Style */
         .ai-output {
-            background-color: #eef2ff; /* Light blue/purple background */
-            border-left: 4px solid #4f46e5; /* Indigo accent */
+            background-color: var(--color-output-bg); 
+            border: 1px solid var(--color-output-border); 
+            border-left: 4px solid var(--color-output-border);
+            color: var(--color-text-light);
             white-space: pre-wrap;
             word-wrap: break-word;
         }
-        /* Loading spinner animation */
+
+        /* Input Fields */
+        input[type="text"], textarea {
+            background-color: #1f232a;
+            border-color: #3c414a;
+            color: var(--color-text-light);
+        }
+        input[type="text"]:focus, textarea:focus {
+            border-color: var(--color-accent-blue);
+            box-shadow: 0 0 0 1px var(--color-accent-blue);
+        }
+
+        /* Loading Spinner */
         .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #4f46e5;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-            vertical-align: middle;
+            border-color: #3c414a;
+            border-top-color: var(--color-accent-green);
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+
+        /* Navigation Tab Styling */
+        .tab-nav {
+            background-color: #1f232a;
         }
-        /* Mobile adjustments */
-        @media (max-width: 768px) {
-            .input-section {
-                padding: 1rem;
-            }
-            .output-section {
-                padding: 1rem;
-            }
+        .tab-button {
+            color: #9CA3AF;
+            transition: color 0.2s, border-bottom 0.2s;
         }
+        .tab-active {
+            color: var(--color-accent-green);
+            border-bottom: 3px solid var(--color-accent-green);
+            font-weight: 600;
+        }
+        
+        /* Dashboard Styling */
+        .dashboard-item {
+            background-color: #1f232a;
+            border-color: #3c414a;
+        }
+        .dashboard-item:hover {
+            background-color: #2c323d;
+        }
+        .text-indigo-700 { color: var(--color-accent-blue); }
+        .text-gray-900 { color: var(--color-text-light); }
+        .text-gray-600 { color: #A0AEC0; }
+        .border-gray-200 { border-color: #3c414a; }
+
+        /* Overriding specific Tailwind colors for the theme */
+        .bg-indigo-600 { background-color: var(--color-accent-blue); }
+        .text-indigo-200 { color: #BEE3F8; }
+        .focus\:ring-indigo-500:focus { --tw-ring-color: var(--color-accent-blue); }
+        .focus\:border-indigo-500:focus { border-color: var(--color-accent-blue); }
+        .bg-emerald-500 { background-color: var(--color-accent-green); }
+        .hover\:bg-emerald-600:hover { background-color: #00A343; }
     </style>
 </head>
 <body class="min-h-screen p-4 md:p-8">
 
     <!-- Main Container -->
-    <div class="max-w-6xl mx-auto container-card rounded-xl overflow-hidden">
+    <div class="max-w-7xl mx-auto container-card rounded-xl overflow-hidden">
 
         <!-- Header -->
         <header class="bg-indigo-600 p-6 text-white text-center rounded-t-xl">
-            <h1 class="text-3xl font-extrabold mb-1">AR AI Protocol Generator</h1>
-            <p class="text-indigo-200 text-sm">Design structured, actionable protocols using Google's Gemini Model and log them to the Activity Dashboard.</p>
+            <h1 class="text-3xl font-extrabold mb-1">AR Mastery Hub</h1>
+            <p class="text-indigo-200 text-sm">Central platform for protocol generation, code checking, and training assets.</p>
         </header>
-
-        <!-- Main Content Grid -->
-        <main class="grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-gray-200">
-
-            <!-- 1. Input Section (2/3 width on desktop) -->
-            <div class="lg:col-span-2 p-6 md:p-8 input-section">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-6">Define Your Scenario</h2>
-
-                <div class="mb-4 text-sm text-gray-600">
-                    <p>User ID: <span id="userIdDisplay" class="font-mono text-xs bg-gray-100 p-1 rounded">...loading...</span></p>
-                </div>
-
-                <!-- Goal Input -->
-                <div class="mb-6">
-                    <label for="goalInput" class="block text-sm font-medium text-gray-700 mb-2">Primary Goal (What needs to be achieved?)</label>
-                    <input type="text" id="goalInput" value="Diagnose engine fault in a specific model of industrial pump." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., Assemble a new server rack; Calibrate a laser component;">
-                </div>
-
-                <!-- Context Input -->
-                <div class="mb-6">
-                    <label for="contextInput" class="block text-sm font-medium text-gray-700 mb-2">AR Context & Constraints (What resources are available?)</label>
-                    <textarea id="contextInput" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., Technician is wearing smart glasses; limited to hand tools; operation must not take longer than 30 minutes; pump model #45-B.">Technician is wearing smart glasses, has access to digital schematics, and must prioritize safety checks first.</textarea>
-                </div>
-
-                <!-- Generation Button -->
-                <button id="generateButton" class="w-full btn-primary text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg flex items-center justify-center" onclick="generateProtocol()">
-                    <span id="buttonText">Generate AR Protocol</span>
-                    <span id="loadingSpinner" class="spinner hidden ml-3"></span>
+        
+        <!-- Navigation Tabs -->
+        <nav class="border-b border-gray-700 shadow-sm sticky top-0 z-10 tab-nav">
+            <div class="flex justify-start space-x-4 p-3 md:px-8">
+                <button class="py-2 px-4 tab-button" data-tab="protocol">
+                    AR Protocol Generator
                 </button>
+                <button class="py-2 px-4 tab-button" data-tab="checker">
+                    Code Checker
+                </button>
+                <button class="py-2 px-4 tab-button" data-tab="hub">
+                    Learning Hub
+                </button>
+                <button class="py-2 px-4 tab-button" data-tab="assets">
+                    Denial Fix / Assets
+                </button>
+            </div>
+        </nav>
 
-                <!-- Status Message -->
-                <p id="statusMessage" class="mt-4 text-sm text-red-600 hidden"></p>
+        <!-- Main Content Area (Tab Panels) -->
+        <div id="tabContent" class="p-6 md:p-8">
+            
+            <!-- 1. AR Protocol Generator Panel -->
+            <div id="protocol" class="tab-panel grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-gray-700">
+                <!-- Input Section (2/3 width on desktop) -->
+                <div class="lg:col-span-2 p-0 md:pr-8 input-section">
+                    <h2 class="text-2xl font-semibold mb-6">Define Your Scenario (AI Generation)</h2>
 
-                <!-- Action Log Button -->
-                <div class="mt-8 pt-6 border-t border-gray-200 flex justify-between items-center">
-                    <h3 class="text-lg font-semibold text-gray-800">Action Plan</h3>
-                    <button onclick="logProtocol()" id="logButton" class="bg-emerald-500 text-white font-medium py-2 px-4 rounded-lg shadow-md hover:bg-emerald-600 transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                        Log to Activity Dashboard
+                    <div class="mb-4 text-sm text-gray-600">
+                        <p>User ID: <span id="userIdDisplay" class="font-mono text-xs bg-gray-700 p-1 rounded text-white">...loading...</span></p>
+                    </div>
+
+                    <!-- Goal Input -->
+                    <div class="mb-6">
+                        <label for="goalInput" class="block text-sm font-medium text-gray-300 mb-2">Primary Goal (What needs to be achieved?)</label>
+                        <input type="text" id="goalInput" value="Diagnose engine fault in a specific model of industrial pump." class="w-full p-3 border rounded-lg focus:ring-1" placeholder="e.g., Assemble a new server rack; Calibrate a laser component;">
+                    </div>
+
+                    <!-- Context Input -->
+                    <div class="mb-6">
+                        <label for="contextInput" class="block text-sm font-medium text-gray-300 mb-2">AR Context & Constraints (What resources are available?)</label>
+                        <textarea id="contextInput" rows="4" class="w-full p-3 border rounded-lg focus:ring-1" placeholder="e.g., Technician is wearing smart glasses; limited to hand tools; operation must not take longer than 30 minutes; pump model #45-B.">Technician is wearing smart glasses, has access to digital schematics, and must prioritize safety checks first.</textarea>
+                    </div>
+
+                    <!-- Generation Button -->
+                    <button id="generateButton" class="w-full btn-primary text-black font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg flex items-center justify-center" onclick="generateProtocol()">
+                        <span id="buttonText">Generate AR Protocol</span>
+                        <span id="loadingSpinner" class="spinner hidden ml-3"></span>
+                    </button>
+
+                    <!-- Status Message -->
+                    <p id="statusMessage" class="mt-4 text-sm text-red-400 hidden"></p>
+
+                    <!-- Action Log Button -->
+                    <div class="mt-8 pt-6 border-t border-gray-700 flex justify-between items-center">
+                        <h3 class="text-lg font-semibold">Action Plan</h3>
+                        <button onclick="logProtocol()" id="logButton" class="bg-emerald-500 text-black font-medium py-2 px-4 rounded-lg shadow-md hover:bg-emerald-600 transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            Log to Activity Dashboard
+                        </button>
+                    </div>
+
+                    <!-- Generated Protocol Output -->
+                    <div id="protocolOutput" class="ai-output mt-4 p-5 rounded-lg text-sm hidden">
+                        <!-- Protocol content goes here -->
+                    </div>
+                </div>
+
+                <!-- Activity Dashboard (1/3 width on desktop) -->
+                <div class="lg:col-span-1 p-0 pt-8 lg:pt-0 lg:pl-8 output-section">
+                    <h2 class="text-2xl font-semibold mb-6 border-t lg:border-t-0 pt-8 lg:pt-0">Activity Dashboard (Firestore)</h2>
+                    <div id="dashboardContent" class="space-y-4">
+                        <!-- Logged protocols will be inserted here -->
+                    </div>
+                    <p id="dashboardMessage" class="text-gray-500 italic mt-4">Loading activity logs...</p>
+                </div>
+            </div>
+
+            <!-- 2. Code Checker Panel -->
+            <div id="checker" class="tab-panel hidden">
+                <h2 class="text-2xl font-semibold mb-6">Code Checker & Review</h2>
+                <p class="text-gray-400 mb-6">Paste your AR-specific code (e.g., Unity/C#, JavaScript, Python) here for an automated syntax and style review.</p>
+
+                <textarea id="codeCheckerInput" rows="10" class="w-full p-4 border rounded-lg focus:ring-1 font-mono text-sm" placeholder="Paste your code here..."></textarea>
+                
+                <button onclick="checkCode()" class="w-full bg-purple-600 text-white font-bold py-3 px-4 mt-4 rounded-lg shadow-md hover:bg-purple-700 transition">
+                    Run Code Check (Placeholder)
+                </button>
+                
+                <div id="codeCheckerOutput" class="ai-output mt-6 p-5 rounded-lg text-sm hidden">
+                    <h3 class="font-bold text-lg mb-2">Review Results:</h3>
+                    <p>No issues found. Code is clean and optimized for AR performance.</p>
+                </div>
+            </div>
+
+            <!-- 3. Learning Hub Panel -->
+            <div id="hub" class="tab-panel hidden">
+                <h2 class="text-2xl font-semibold mb-6">Learning Hub & Documentation</h2>
+                <p class="text-gray-400 mb-6">Access guides, tutorials, and documentation for best practices in AR protocol design and development.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <a href="#" class="block p-6 rounded-xl hover:bg-gray-700 transition shadow-md border border-gray-700 dashboard-item">
+                        <h3 class="text-xl font-bold text-green-400">Guide: Optimizing Protocols for Smart Glasses</h3>
+                        <p class="text-sm text-gray-400 mt-2">Learn how to write steps that minimize head movement and eye strain.</p>
+                    </a>
+                    <a href="#" class="block p-6 rounded-xl hover:bg-gray-700 transition shadow-md border border-gray-700 dashboard-item">
+                        <h3 class="text-xl font-bold text-green-400">Video: Firebase Setup for Real-Time Logging</h3>
+                        <p class="text-sm text-gray-400 mt-2">Step-by-step video on enabling the Activity Dashboard with Firestore.</p>
+                    </a>
+                    <a href="#" class="block p-6 rounded-xl hover:bg-gray-700 transition shadow-md border border-gray-700 dashboard-item">
+                        <h3 class="text-xl font-bold text-green-400">Checklist: Pre-Deployment AR Safety Review</h3>
+                        <p class="text-sm text-gray-400 mt-2">Mandatory checks before deploying protocols to the field.</p>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 4. Denial Fix / Assets Panel -->
+            <div id="assets" class="tab-panel hidden">
+                <h2 class="text-2xl font-semibold mb-6">Denial Fix & Training Assets ("Apples Section")</h2>
+                <p class="text-gray-400 mb-6">This section provides troubleshooting workflows ("Denial Fix") and access to reusable training assets (e.g., 3D models, reference images, often referred to as the "Apples Section").</p>
+
+                <!-- Denial Fix Card -->
+                <div class="p-6 border border-red-500 rounded-xl mb-8 bg-red-900 bg-opacity-30">
+                    <h3 class="text-xl font-bold text-red-400 mb-3">Workflow: Protocol Denial Fix</h3>
+                    <p class="text-gray-300">If a generated protocol is rejected by a safety team, use this space to input their reason for denial to generate a compliant revision.</p>
+                    <textarea rows="3" class="w-full p-2 mt-3 border border-red-500 rounded-lg bg-red-900 bg-opacity-20" placeholder="Enter denial reason here..."></textarea>
+                    <button class="bg-red-600 text-white font-medium py-2 px-4 mt-3 rounded-lg hover:bg-red-700 transition">
+                        Generate Revised Protocol (Placeholder)
                     </button>
                 </div>
-
-                <!-- Generated Protocol Output -->
-                <div id="protocolOutput" class="ai-output mt-4 p-5 rounded-lg text-gray-800 text-sm hidden">
-                    <!-- Protocol content goes here -->
+                
+                <!-- Apples Section Asset List -->
+                <h3 class="text-xl font-bold mb-4">Reusable Assets (Apples)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="p-4 rounded-lg text-sm border border-gray-700 dashboard-item">
+                        <p class="font-medium text-green-400">Model: Industrial Pump (v2)</p>
+                        <p class="text-xs text-gray-500">3D Asset - .gltf</p>
+                    </div>
+                    <div class="p-4 rounded-lg text-sm border border-gray-700 dashboard-item">
+                        <p class="font-medium text-green-400">Schematic: Model #45-B Wiring</p>
+                        <p class="text-xs text-gray-500">2D Asset - .pdf</p>
+                    </div>
+                    <div class="p-4 rounded-lg text-sm border border-gray-700 dashboard-item">
+                        <p class="font-medium text-green-400">Checklist: Valve Calibration</p>
+                        <p class="text-xs text-gray-500">Text Asset - .txt</p>
+                    </div>
                 </div>
             </div>
 
-            <!-- 2. Activity Dashboard (1/3 width on desktop) -->
-            <div class="lg:col-span-1 p-6 md:p-8 output-section">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-6">Activity Dashboard (Firestore)</h2>
-                <div id="dashboardContent" class="space-y-4">
-                    <!-- Logged protocols will be inserted here -->
-                </div>
-                <p id="dashboardMessage" class="text-gray-500 italic mt-4">Loading activity logs...</p>
-            </div>
-
-        </main>
+        </div>
 
     </div>
 
@@ -145,7 +283,6 @@
         const API_URL_BASE = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent";
 
         // 2. Firebase Config and App ID (Using fallbacks for GitHub Pages compatibility)
-        // NOTE: The dashboard will be disabled unless you replace 'null' with your OWN Firebase config object.
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-ar-app-id';
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
@@ -166,7 +303,66 @@
         const dashboardContent = document.getElementById('dashboardContent');
         const dashboardMessage = document.getElementById('dashboardMessage');
         const userIdDisplay = document.getElementById('userIdDisplay');
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabPanels = document.querySelectorAll('.tab-panel');
 
+        // --- TAB MANAGEMENT ---
+        function showTab(tabId) {
+            tabPanels.forEach(panel => {
+                panel.classList.add('hidden');
+            });
+            tabButtons.forEach(button => {
+                button.classList.remove('tab-active');
+            });
+
+            document.getElementById(tabId).classList.remove('hidden');
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('tab-active');
+        }
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                showTab(button.dataset.tab);
+            });
+        });
+
+        // Initialize with the Protocol Generator tab active
+        showTab('protocol'); 
+
+        // --- PLACEHOLDER FUNCTIONS FOR NEW TABS ---
+        window.checkCode = () => {
+            const input = document.getElementById('codeCheckerInput').value.trim();
+            const output = document.getElementById('codeCheckerOutput');
+            output.classList.remove('hidden');
+            
+            const outputElement = document.getElementById('codeCheckerOutput');
+            const buttonElement = document.querySelector('#checker button');
+
+            buttonElement.textContent = 'Checking Code...';
+            buttonElement.disabled = true;
+
+            setTimeout(() => {
+                buttonElement.textContent = 'Run Code Check (Placeholder)';
+                buttonElement.disabled = false;
+                
+                if (input.includes('unsafe') || input.includes('bug')) {
+                    outputElement.innerHTML = `
+                        <h3 class="font-bold text-lg mb-2 text-red-400">Review Results: CRITICAL ERRORS FOUND</h3>
+                        <p>Potential issue with asynchronous AR scene updates detected. Review line 42 for unsafe state manipulation. Suggestion: Implement denial fix workflow to address security flags.</p>
+                    `;
+                } else if (input) {
+                    outputElement.innerHTML = `
+                        <h3 class="font-bold text-lg mb-2 text-green-400">Review Results: OPTIMIZED</h3>
+                        <p>Code is clean, efficient, and follows AR development standards. Ready for deployment!</p>
+                    `;
+                } else {
+                     outputElement.innerHTML = `
+                        <h3 class="font-bold text-lg mb-2">Review Results:</h3>
+                        <p>Please paste code into the text area to run the check.</p>
+                    `;
+                }
+            }, 1500); // Simulate network delay
+        }
+        
         // --- FIREBASE INITIALIZATION AND AUTHENTICATION ---
 
         if (firebaseConfig) {
@@ -181,7 +377,6 @@
                     userIdDisplay.textContent = userId;
                     isAuthReady = true;
                     console.log("Firebase Auth Ready. User ID:", userId);
-                    // Start listening for dashboard updates
                     setupDashboardListener();
                 } else {
                     console.log("No user signed in. Attempting anonymous sign-in.");
@@ -195,12 +390,11 @@
                         console.error("Firebase Auth Error:", error);
                         dashboardMessage.textContent = "Error initializing Firebase Auth. Check console for details.";
                         userIdDisplay.textContent = 'ERROR';
-                        isAuthReady = true; // Still mark as ready to prevent infinite loading state
+                        isAuthReady = true; 
                     }
                 }
             });
         } else {
-            // Fallback for when no Firebase config is provided (e.g., on a basic local run or GitHub Pages without configuration)
             console.warn("Firebase configuration missing. Dashboard logging will be disabled.");
             dashboardMessage.textContent = "Dashboard is disabled. To enable, configure Firebase.";
             logButton.disabled = true;
@@ -209,23 +403,19 @@
         }
 
 
-        // --- FIRESTORE DASHBOARD LOGIC ---
+        // --- FIRESTORE DASHBOARD LOGIC (Same as before) ---
 
         function getProtocolsCollectionRef(uid) {
-            // Private data path: /artifacts/{appId}/users/{userId}/protocols
             return collection(db, 'artifacts', appId, 'users', uid, 'protocols');
         }
 
         function setupDashboardListener() {
-            if (!db || !isAuthReady) {
-                console.warn("Firestore or Auth not ready, skipping listener setup.");
-                return;
-            }
+            if (!db || !isAuthReady) return;
 
             const protocolsQuery = query(getProtocolsCollectionRef(userId));
 
             onSnapshot(protocolsQuery, (snapshot) => {
-                if (!isAuthReady) return; // Prevent callback execution before initial auth check
+                if (!isAuthReady) return; 
 
                 const protocols = [];
                 snapshot.forEach((doc) => {
@@ -241,50 +431,26 @@
 
         function renderDashboard(protocols) {
             dashboardContent.innerHTML = '';
-            protocols.sort((a, b) => (b.timestamp?.toMillis() || 0) - (a.timestamp?.toMillis() || 0)); // Sort newest first
+            protocols.sort((a, b) => (b.timestamp?.toMillis() || 0) - (a.timestamp?.toMillis() || 0)); 
 
             if (protocols.length === 0) {
                 dashboardMessage.textContent = "No action plans logged yet.";
                 return;
             }
 
-            dashboardMessage.textContent = ''; // Clear loading message
+            dashboardMessage.textContent = ''; 
 
             protocols.forEach(p => {
                 const date = p.timestamp ? new Date(p.timestamp.toMillis()).toLocaleString() : 'N/A';
                 const element = document.createElement('div');
-                element.className = 'bg-gray-50 p-4 rounded-lg border border-gray-200 hover:shadow-md transition';
+                element.className = 'dashboard-item p-4 rounded-lg border hover:shadow-lg transition';
                 element.innerHTML = `
-                    <p class="text-xs font-semibold text-indigo-700">${date}</p>
-                    <p class="text-sm font-medium text-gray-900 mt-1 truncate" title="${p.goal}">Goal: ${p.goal}</p>
-                    <button class="text-xs text-indigo-600 mt-2 hover:text-indigo-800" onclick="viewProtocol('${p.id}')">View Protocol</button>
+                    <p class="text-xs font-semibold text-green-400">${date}</p>
+                    <p class="text-sm font-medium text-white mt-1 truncate" title="${p.goal}">Goal: ${p.goal}</p>
+                    <button class="text-xs text-blue-400 mt-2 hover:text-blue-200" onclick="alertModal('Protocol Details', 'Goal: ${p.goal.replace(/'/g, '\\\'')}<br>Context: ${p.context.replace(/'/g, '\\\'')}<br>---<br>Protocol: ${p.protocol.replace(/\n/g, '<br>').replace(/'/g, '\\\'')}')">View Protocol</button>
                 `;
                 dashboardContent.appendChild(element);
             });
-        }
-
-        window.viewProtocol = (id) => {
-             // In a real app, you would fetch the full protocol. 
-             // For this single-file example, we just log a message.
-             console.log("Viewing full protocol for ID:", id);
-             // You could implement a modal here to display the full text.
-             alertModal('Protocol View', `In a full application, a modal would display the details for protocol ID: ${id}`);
-        }
-
-        function alertModal(title, message) {
-            const existingModal = document.getElementById('customAlertModal');
-            if (existingModal) existingModal.remove();
-
-            const modalHtml = `
-                <div id="customAlertModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6">
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">${title}</h3>
-                        <p class="text-gray-700 text-sm mb-6">${message}</p>
-                        <button onclick="document.getElementById('customAlertModal').remove()" class="w-full btn-primary text-white font-semibold py-2 rounded-lg">Close</button>
-                    </div>
-                </div>
-            `;
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
         }
 
         window.logProtocol = async () => {
@@ -295,11 +461,10 @@
             }
 
             try {
-                // Ensure we only store essential, small, or serializable data
                 const logData = {
                     goal: currentProtocol.goal,
                     context: currentProtocol.context,
-                    protocol: currentProtocol.protocol, // Store the full text
+                    protocol: currentProtocol.protocol,
                     timestamp: serverTimestamp(),
                     userId: userId,
                 };
@@ -307,42 +472,49 @@
                 await addDoc(getProtocolsCollectionRef(userId), logData);
                 console.log("Protocol successfully logged to Firestore.");
                 alertModal('Success!', 'The AR Protocol has been logged to your Activity Dashboard.');
-                logButton.disabled = true; // Disable until a new protocol is generated
+                logButton.disabled = true; 
 
             } catch (error) {
                 console.error("Error writing protocol to Firestore:", error);
                 alertModal('Error', 'Failed to log the protocol. Check console for details.');
             }
         };
+        
+        // Modal and UI helpers (same as before)
+        function alertModal(title, message) {
+            const existingModal = document.getElementById('customAlertModal');
+            if (existingModal) existingModal.remove();
 
-        // --- GEMINI API LOGIC ---
+            const modalHtml = `
+                <div id="customAlertModal" class="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center p-4 z-50">
+                    <div class="bg-gray-800 rounded-xl shadow-2xl max-w-sm w-full p-6 text-white border border-gray-700">
+                        <h3 class="text-xl font-bold text-green-400 mb-4">${title}</h3>
+                        <p class="text-gray-300 text-sm mb-6">${message}</p>
+                        <button onclick="document.getElementById('customAlertModal').remove()" class="w-full btn-primary text-black font-semibold py-2 rounded-lg">Close</button>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
 
-        // Simple exponential backoff retry mechanism for API calls
+        // --- GEMINI API LOGIC (Same as before) ---
+
         async function fetchWithRetry(url, options, maxRetries = 3) {
             for (let i = 0; i < maxRetries; i++) {
                 try {
                     const response = await fetch(url, options);
-                    if (response.status === 429) { // Rate limit
-                        throw new Error("Rate limit exceeded. Retrying...");
-                    }
+                    if (response.status === 429) { throw new Error("Rate limit exceeded. Retrying..."); }
                     if (!response.ok) {
-                        // Throw error for other non-2xx status codes
                         let errorDetail = await response.text();
                         try {
                             const errorBody = JSON.parse(errorDetail);
                             errorDetail = JSON.stringify(errorBody);
-                        } catch (e) {
-                            // errorDetail is already text
-                        }
+                        } catch (e) {}
                         throw new Error(`HTTP error! Status: ${response.status}. Details: ${errorDetail}`);
                     }
                     return response;
                 } catch (error) {
-                    // Only log error on the final retry attempt
-                    if (i === maxRetries - 1) {
-                        throw error; 
-                    }
-                    // Exponential backoff
+                    if (i === maxRetries - 1) { throw error; }
                     const delay = Math.pow(2, i) * 1000 + Math.random() * 1000;
                     await new Promise(resolve => setTimeout(resolve, delay));
                 }
@@ -350,18 +522,12 @@
         }
 
         async function callGeminiAPI(prompt, systemInstruction) {
-            if (!apiKey) {
-                throw new Error("API Key is missing. Cannot call the model.");
-            }
+            if (!apiKey) { throw new Error("API Key is missing. Cannot call the model."); }
 
             const payload = {
                 contents: [{ parts: [{ text: prompt }] }],
                 systemInstruction: { parts: [{ text: systemInstruction }] },
-                // Use a strong, structured generation format
-                generationConfig: {
-                    temperature: 0.2,
-                    topK: 40,
-                },
+                generationConfig: { temperature: 0.2, topK: 40 },
             };
 
             const url = `${API_URL_BASE}?key=${apiKey}`;
@@ -378,7 +544,6 @@
             const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
             
             if (!text) {
-                 // Check if there are block reasons or errors
                 const reason = result.candidates?.[0]?.finishReason || 'Unknown';
                 const message = result.error?.message || 'No text generated.';
                 throw new Error(`API failed to generate text. Finish Reason: ${reason}. Error: ${message}`);
@@ -387,7 +552,7 @@
             return text;
         }
 
-        // --- MAIN APPLICATION LOGIC ---
+        // --- MAIN APPLICATION LOGIC (Same as before) ---
 
         window.generateProtocol = async () => {
             const goal = document.getElementById('goalInput').value.trim();
@@ -417,7 +582,6 @@
             try {
                 const generatedText = await callGeminiAPI(prompt, systemInstruction);
                 
-                // Final cleaning and formatting
                 const markdownContent = generatedText.startsWith('```markdown') 
                     ? generatedText.substring(13, generatedText.lastIndexOf('```'))
                     : generatedText;
@@ -441,21 +605,16 @@
             }
         };
         
-        // Simple Markdown-to-HTML formatting (converts markdown lists to HTML lists)
         function formatProtocolForHTML(markdown) {
-            // Replace simple markdown list markers (* or -) with HTML list structure
             let html = markdown.replace(/^[\s]*[-*+]\s+(.*)/gm, (match, content) => {
-                // Apply Tailwind classes for better list styling
-                return `<li class="ml-4 pl-1 text-gray-700 mb-2 list-disc">${content.trim()}</li>`;
+                return `<li class="ml-4 pl-1 text-gray-300 mb-2 list-disc">${content.trim()}</li>`;
             });
 
-            // Wrap in an unordered list if list items were found
             if (html.includes('<li')) {
                  html = `<ul class="list-inside p-0">${html}</ul>`;
             }
             
-            // Basic bolding (for safety checks etc.)
-            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); 
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="text-green-400">$1</strong>'); 
 
             return html;
         }
