@@ -3,1205 +3,463 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR-SYNAPSE AI Mastery Platform V3</title>
+    <title>Augmented Reality AI Protocol Generator</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght+400;600&display=swap" rel="stylesheet">
+    <!-- Load Three.js for potential future 3D/AR elements or visualizations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
-        /* Codecademy-Inspired Dark Theme and Typography */
-        :root {
-            --color-bg-dark: #111827; /* Dark Slate */
-            --color-card-dark: #1f2937; /* Lighter Slate */
-            --color-primary: #10b981; /* Emerald Green */
-            --color-secondary: #3b82f6; /* Codecademy Blue */
-            --color-text-light: #f9fafb;
-            --color-text-muted: #9ca3af;
-            --color-danger: #ef4444; /* Red */
-        }
-
+        /* Custom styles for aesthetic enhancements */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--color-bg-dark);
-            color: var(--color-text-light);
-            overflow: hidden;
+            background-color: #f4f7f9;
         }
-        
-        .main-card {
-            background-color: var(--color-card-dark);
-            border-radius: 0.75rem;
-            border: 1px solid #374151; /* Subtle border */
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s;
+        .container-card {
+            background-color: #ffffff;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
-        
-        /* Sidebar and Navigation */
-        .sidebar { background-color: var(--color-bg-dark); border-color: #374151; }
-        .active-nav {
-            background-color: var(--color-card-dark);
-            color: var(--color-primary);
-            border-left: 4px solid var(--color-primary);
+        .btn-primary {
+            background-image: linear-gradient(to right, #0575E6, #021B79);
+            transition: all 0.3s ease;
         }
-        .nav-item { transition: all 0.2s; border-left: 4px solid transparent; }
-        .nav-item:hover { background-color: #374151; }
-
-        /* Protocol/Code Output Area (Clean Console Look) */
-        .protocol-output {
-            font-family: 'Roboto Mono', monospace;
-            background-color: #000000; 
-            border: 1px solid var(--color-primary);
-            color: #d1d5db; 
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
         }
-
-        /* Input Fields */
-        input, select, textarea {
-            background-color: #374151 !important;
-            border-color: #4b5563 !important;
-            color: var(--color-text-light) !important;
+        .ai-output {
+            background-color: #eef2ff; /* Light blue/purple background */
+            border-left: 4px solid #4f46e5; /* Indigo accent */
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
-
-        /* Spinner */
+        /* Loading spinner animation */
         .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-left-color: var(--color-primary);
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4f46e5;
             border-radius: 50%;
             width: 24px;
             height: 24px;
             animation: spin 1s linear infinite;
-            display: none;
+            display: inline-block;
+            vertical-align: middle;
         }
-        .loading .spinner { display: inline-block; }
-        .loading button { pointer-events: none; }
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
-        
-        /* Custom styles for Learning Hub */
-        .lesson-card {
-            background-color: #1f2937;
-            padding: 24px;
-            border-radius: 12px;
-            border-left: 5px solid var(--color-secondary);
-        }
-        .key-takeaway-item {
-            list-style: none;
-            padding-left: 1.5rem;
-            position: relative;
-        }
-        .key-takeaway-item::before {
-            content: "•";
-            color: var(--color-primary);
-            font-size: 1.5rem;
-            position: absolute;
-            left: 0;
-            top: -2px;
+        /* Mobile adjustments */
+        @media (max-width: 768px) {
+            .input-section {
+                padding: 1rem;
+            }
+            .output-section {
+                padding: 1rem;
+            }
         }
     </style>
 </head>
-<body class="flex h-screen">
-    
-    <!-- Firebase Imports and Initialization (Module Script) -->
+<body class="min-h-screen p-4 md:p-8">
+
+    <!-- Main Container -->
+    <div class="max-w-6xl mx-auto container-card rounded-xl overflow-hidden">
+
+        <!-- Header -->
+        <header class="bg-indigo-600 p-6 text-white text-center rounded-t-xl">
+            <h1 class="text-3xl font-extrabold mb-1">AR AI Protocol Generator</h1>
+            <p class="text-indigo-200 text-sm">Design structured, actionable protocols using Google's Gemini Model and log them to the Activity Dashboard.</p>
+        </header>
+
+        <!-- Main Content Grid -->
+        <main class="grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-gray-200">
+
+            <!-- 1. Input Section (2/3 width on desktop) -->
+            <div class="lg:col-span-2 p-6 md:p-8 input-section">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6">Define Your Scenario</h2>
+
+                <div class="mb-4 text-sm text-gray-600">
+                    <p>User ID: <span id="userIdDisplay" class="font-mono text-xs bg-gray-100 p-1 rounded">...loading...</span></p>
+                </div>
+
+                <!-- Goal Input -->
+                <div class="mb-6">
+                    <label for="goalInput" class="block text-sm font-medium text-gray-700 mb-2">Primary Goal (What needs to be achieved?)</label>
+                    <input type="text" id="goalInput" value="Diagnose engine fault in a specific model of industrial pump." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., Assemble a new server rack; Calibrate a laser component;">
+                </div>
+
+                <!-- Context Input -->
+                <div class="mb-6">
+                    <label for="contextInput" class="block text-sm font-medium text-gray-700 mb-2">AR Context & Constraints (What resources are available?)</label>
+                    <textarea id="contextInput" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., Technician is wearing smart glasses; limited to hand tools; operation must not take longer than 30 minutes; pump model #45-B.">Technician is wearing smart glasses, has access to digital schematics, and must prioritize safety checks first.</textarea>
+                </div>
+
+                <!-- Generation Button -->
+                <button id="generateButton" class="w-full btn-primary text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg flex items-center justify-center" onclick="generateProtocol()">
+                    <span id="buttonText">Generate AR Protocol</span>
+                    <span id="loadingSpinner" class="spinner hidden ml-3"></span>
+                </button>
+
+                <!-- Status Message -->
+                <p id="statusMessage" class="mt-4 text-sm text-red-600 hidden"></p>
+
+                <!-- Action Log Button -->
+                <div class="mt-8 pt-6 border-t border-gray-200 flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-gray-800">Action Plan</h3>
+                    <button onclick="logProtocol()" id="logButton" class="bg-emerald-500 text-white font-medium py-2 px-4 rounded-lg shadow-md hover:bg-emerald-600 transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        Log to Activity Dashboard
+                    </button>
+                </div>
+
+                <!-- Generated Protocol Output -->
+                <div id="protocolOutput" class="ai-output mt-4 p-5 rounded-lg text-gray-800 text-sm hidden">
+                    <!-- Protocol content goes here -->
+                </div>
+            </div>
+
+            <!-- 2. Activity Dashboard (1/3 width on desktop) -->
+            <div class="lg:col-span-1 p-6 md:p-8 output-section">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6">Activity Dashboard (Firestore)</h2>
+                <div id="dashboardContent" class="space-y-4">
+                    <!-- Logged protocols will be inserted here -->
+                </div>
+                <p id="dashboardMessage" class="text-gray-500 italic mt-4">Loading activity logs...</p>
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- Firebase and Application Logic -->
     <script type="module">
+        // Import necessary Firebase modules from CDN
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, addDoc, onSnapshot, collection, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, addDoc, onSnapshot, collection, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
-        // --- GLOBAL CONFIG & INIT ---
+        // Setting Firebase log level for debugging
+        setLogLevel('Debug');
+
+        // --- GLOBAL VARIABLES (CRITICAL) ---
+        // 1. API Key (MUST be your Gemini API Key)
+        const apiKey = "AIzaSyCmi1dRvyb1_97VLYfj3T-V9tvojqSF8B8"; 
+        const API_URL_BASE = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent";
+
+        // 2. Firebase Config and App ID (Using fallbacks for GitHub Pages compatibility)
+        // NOTE: The dashboard will be disabled unless you replace 'null' with your OWN Firebase config object.
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-ar-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : undefined;
-        
-        if (Object.keys(firebaseConfig).length === 0) {
-            console.warn("Firebase configuration is missing.");
-        }
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
+        let db;
+        let auth;
+        let userId = 'anonymous';
+        let currentProtocol = null;
+        let isAuthReady = false;
 
-        // Export core services to the window object for access from the main script
-        window.db = db;
-        window.auth = auth;
-        window.appId = appId;
-        window.userId = null; 
-        
-        // --- AUTHENTICATION & LISTENER SETUP ---
-        // This function runs on every auth state change (sign in, sign out)
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                window.userId = user.uid;
-                // If window.setupDashboardListener is defined by the main script (meaning DOM is ready), run it.
-                if (window.setupDashboardListener) {
-                    window.setupDashboardListener(user.uid);
-                }
-            } else {
-                window.userId = 'anonymous-' + crypto.randomUUID();
-            }
-            // Update the display for the main script
-            if (window.updateUserIdDisplay) {
-                window.updateUserIdDisplay(window.userId);
-            }
-        });
+        // --- UI ELEMENTS ---
+        const protocolOutput = document.getElementById('protocolOutput');
+        const generateButton = document.getElementById('generateButton');
+        const buttonText = document.getElementById('buttonText');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const statusMessage = document.getElementById('statusMessage');
+        const logButton = document.getElementById('logButton');
+        const dashboardContent = document.getElementById('dashboardContent');
+        const dashboardMessage = document.getElementById('dashboardMessage');
+        const userIdDisplay = document.getElementById('userIdDisplay');
 
-        // Sign in using custom token or anonymously
-        async function signIn() {
-            try {
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
+        // --- FIREBASE INITIALIZATION AND AUTHENTICATION ---
+
+        if (firebaseConfig) {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            
+            // 1. Authentication Listener
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    userId = user.uid;
+                    userIdDisplay.textContent = userId;
+                    isAuthReady = true;
+                    console.log("Firebase Auth Ready. User ID:", userId);
+                    // Start listening for dashboard updates
+                    setupDashboardListener();
                 } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (error) {
-                console.error("Firebase Auth Error:", error);
-            }
-        }
-        signIn();
-
-        // --- FIRESTORE WRITE FUNCTION (Globally Exported) ---
-        window.logActionPlan = async (protocolData) => {
-             if (!window.userId || !window.db) {
-                console.error("Firebase not initialized or user not authenticated.");
-                return { success: false };
-             }
-            
-             const path = `artifacts/${appId}/users/${window.userId}/action_plans`;
-             const actionCollectionRef = collection(window.db, path);
-             
-             try {
-                await addDoc(actionCollectionRef, {
-                    denialCode: protocolData.denialCode, 
-                    payer: protocolData.payer,           
-                    protocolTitle: protocolData.protocolTitle,
-                    confidence: protocolData.confidence,
-                    date: serverTimestamp()
-                });
-                return { success: true };
-             } catch (error) {
-                 console.error("Error logging action plan:", error);
-                 return { success: false, error };
-             }
-        }
-        
-        // --- FIRESTORE READ SETUP (Globally Exported) ---
-        // This function is called by the main script once the DOM is ready and the user is authenticated.
-        window.setupDashboardListener = (uid) => {
-            const path = `artifacts/${appId}/users/${uid}/action_plans`;
-            const actionCollectionRef = collection(db, path);
-            
-            const q = query(actionCollectionRef);
-
-            onSnapshot(q, (snapshot) => {
-                const plans = [];
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    plans.push({ id: doc.id, ...data });
-                });
-                
-                // Sort by date descending (latest first) client-side
-                plans.sort((a, b) => (b.date?.toMillis() || 0) - (a.date?.toMillis() || 0));
-
-                // Call the globally defined render function
-                if (window.renderActionPlans) {
-                     window.renderActionPlans(plans);
-                }
-            }, (error) => {
-                console.error("Error fetching action plans:", error);
-                if (window.renderActionPlans) {
-                    window.renderActionPlans([], true); // Pass error state to render
+                    console.log("No user signed in. Attempting anonymous sign-in.");
+                    try {
+                        if (initialAuthToken) {
+                            await signInWithCustomToken(auth, initialAuthToken);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    } catch (error) {
+                        console.error("Firebase Auth Error:", error);
+                        dashboardMessage.textContent = "Error initializing Firebase Auth. Check console for details.";
+                        userIdDisplay.textContent = 'ERROR';
+                        isAuthReady = true; // Still mark as ready to prevent infinite loading state
+                    }
                 }
             });
+        } else {
+            // Fallback for when no Firebase config is provided (e.g., on a basic local run or GitHub Pages without configuration)
+            console.warn("Firebase configuration missing. Dashboard logging will be disabled.");
+            dashboardMessage.textContent = "Dashboard is disabled. To enable, configure Firebase.";
+            logButton.disabled = true;
+            userIdDisplay.textContent = 'FIREBASE_DISABLED';
+            isAuthReady = true;
         }
-    </script>
-
-    <!-- Sidebar Navigation -->
-    <aside class="w-20 md:w-64 sidebar border-r flex flex-col transition-all duration-300">
-        <div class="flex items-center justify-center md:justify-start p-4 h-16 border-b">
-             <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-black font-extrabold text-xl shadow-lg">
-                <span class="text-xs text-black font-extrabold p-1 rounded" style="background-color: var(--color-primary);">AI</span>
-             </div>
-             <h1 class="text-xl font-extrabold text-white ml-3 hidden md:block">SYNAPSE ACADEMY</h1>
-        </div>
-        <nav class="flex-1 px-2 md:px-4 py-4 space-y-1">
-            <a href="#" id="nav-resolver" class="nav-item flex items-center p-3 rounded-lg font-medium active-nav">
-                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                <span class="ml-4 hidden md:block">Denial Resolver</span>
-            </a>
-             <a href="#" id="nav-code-checker" class="nav-item flex items-center p-3 rounded-lg text-slate-300 font-medium">
-                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
-                <span class="ml-4 hidden md:block">Code Checker</span>
-            </a>
-            <a href="#" id="nav-quality" class="nav-item flex items-center p-3 rounded-lg text-slate-300 font-medium">
-                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <span class="ml-4 hidden md:block">Note Quality Check</span>
-            </a>
-            <a href="#" id="nav-learning" class="nav-item flex items-center p-3 rounded-lg text-slate-300 font-medium">
-                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.25278C12 6.25278 10.8333 4.5 8 4.5C5.16667 4.5 3 6.66667 3 9.5C3 13.5 8 18.5 12 21.5C16 18.5 21 13.5 21 9.5C21 6.66667 18.8333 4.5 16 4.5C13.1667 4.5 12 6.25278 12 6.25278Z"/></svg>
-                <span class="ml-4 hidden md:block">Learning Hub</span>
-            </a>
-            <a href="#" id="nav-dashboard" class="nav-item flex items-center p-3 rounded-lg text-slate-300 font-medium">
-                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10v11h6v-7h6v7h6V10M12 2L2 10h20L12 2z"/></svg>
-                <span class="ml-4 hidden md:block">Activity Dashboard</span>
-            </a>
-        </nav>
-        <div class="p-4 border-t border-gray-800">
-            <p class="text-xs text-gray-500 truncate">User ID: <span id="display-user-id">Loading...</span></p>
-        </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="flex-1 overflow-y-auto">
-        
-        <!-- Denial Resolver Section -->
-        <section id="resolver" class="p-6 md:p-10">
-             <h1 class="text-4xl font-extrabold text-white mb-2">DENIAL RESOLVER: AI PROTOCOL SYNTHESIS</h1>
-             <p class="text-gray-400 mb-8">Paste the full denial reason or remittance advice line and let the AI extract details and generate an **Evidence-Based Resolution Protocol** in real-time.</p>
-             
-             <!-- AI Resolution Tool -->
-             <div class="main-card p-6 md:p-8 mb-8 border-t-4" style="border-color: var(--color-primary);">
-                <h2 class="text-2xl font-bold text-white mb-4">Input Denial Parameters</h2>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                    <!-- RAW DENIAL INPUT -->
-                    <div class="col-span-1 md:col-span-4">
-                        <label for="denial-reason-input" class="block text-sm font-medium text-gray-300">Raw Denial Reason/Remittance Line (e.g., "Payer: BCBS, Denied with CARC: CO-45, Claim CRX-9213")</label>
-                        <textarea id="denial-reason-input" rows="3" class="mt-1 block w-full rounded-md shadow-sm sm:text-sm p-3 font-mono" placeholder="Paste full denial text here... e.g. 'The charge of $150 for CPT 99213 exceeds the maximum fee allowance set by the payer (BCBS PPO). Code: CO-45.'">Payer: BCBS PPO. The claim CRX-9213 for CPT 99213 was denied because the filing limit expired on 01/01/2025. Code: CO-29.</textarea>
-                    </div>
-
-                    <button id="resolve-btn" class="col-span-1 md:col-span-4 w-full text-black font-extrabold py-2 px-4 rounded-md transition-colors flex items-center justify-center" style="background-color: var(--color-primary); hover-bg: #059669;">
-                        <span id="resolve-btn-text">ANALYZE & GENERATE PROTOCOL</span>
-                        <div class="spinner ml-2" id="resolve-spinner"></div>
-                    </button>
-                </div>
-                
-                <!-- AI Protocol Output -->
-                <div id="resolution-output" class="mt-8 p-6 md:p-8 protocol-output rounded-lg hidden">
-                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                        <div class="lg:col-span-3 space-y-4">
-                            <h2 class="text-xl font-bold" style="color: var(--color-secondary);" id="protocol-title"></h2>
-                            <div class="text-gray-400 text-sm mb-4">
-                                <p><strong>Payer Extracted:</strong> <span id="extracted-payer">--</span></p>
-                                <p><strong>Denial Code Extracted:</strong> <span id="extracted-code">--</span></p>
-                            </div>
-                            <ul class="space-y-3 text-sm" id="protocol-steps"></ul>
-                        </div>
-                        <div class="lg:col-span-1 space-y-4 text-center">
-                             <h3 class="text-lg font-bold text-white border-b border-gray-700 pb-1">AI Confidence</h3>
-                             <p class="text-6xl font-extrabold" style="color: var(--color-primary);" id="ai-confidence">--</p>
-                             <p class="text-sm text-gray-400 font-medium" id="confidence-summary">Ready for AI generation.</p>
-                             <button id="save-to-dashboard-btn" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-500 transition-colors mt-4 hidden">
-                                LOG ACTION PLAN
-                             </button>
-                             <div id="save-message" class="text-sm text-green-400 mt-2 hidden text-center">Protocol logged successfully!</div>
-                        </div>
-                    </div>
-                 </div>
-                 <p id="resolve-error" class="text-red-400 mt-4 hidden text-center"></p>
-             </div>
-             
-             <!-- APPEAL GENERATOR SECTION (NEW) -->
-             <div id="appeal-generator-box" class="main-card p-6 md:p-8 mt-6 hidden border-l-4" style="border-color: var(--color-danger);">
-                 <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-2xl font-extrabold text-white">Appeal Preparation Required?</h2>
-                    <button id="generate-appeal-btn" class="bg-red-600 text-white font-bold py-2 px-4 rounded-md hover:bg-red-500 transition-colors flex items-center justify-center">
-                        <span id="appeal-btn-text">GENERATE APPEAL PACKAGE</span>
-                        <div class="spinner ml-2" id="appeal-spinner"></div>
-                    </button>
-                 </div>
-                 <p class="text-sm text-gray-400 mb-4">Based on the resolution, the denial may require an appeal. Click to generate the necessary documentation checklist and draft verbiage.</p>
-                 
-                 <div id="appeal-output" class="mt-6 hidden bg-[#374151] p-4 rounded-lg">
-                    <p id="appeal-error" class="text-red-400 mt-2 hidden text-center"></p>
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div class="lg:col-span-1">
-                            <h3 class="text-lg font-bold mb-2 text-white border-b border-gray-600 pb-1">Required Documentation Checklist</h3>
-                            <ul id="appeal-checklist" class="space-y-2 text-sm text-gray-300 list-disc list-inside">
-                                <!-- Populated by JS -->
-                            </ul>
-                        </div>
-                        <div class="lg:col-span-2">
-                             <h3 class="text-lg font-bold mb-2 text-white border-b border-gray-600 pb-1">Draft Appeal Verbiage</h3>
-                            <textarea id="appeal-verbiage-output" rows="10" class="w-full rounded-md shadow-sm sm:text-sm p-3 font-mono text-gray-200 bg-[#111827] border border-gray-700"></textarea>
-                            <button id="copy-verbiage-btn" class="mt-2 text-sm bg-gray-600 text-white py-1 px-3 rounded-md hover:bg-gray-500 transition-colors">Copy Verbiage</button>
-                            <span id="copy-message" class="ml-3 text-sm text-green-400 hidden">Copied!</span>
-                        </div>
-                    </div>
-                 </div>
-             </div>
-        </section>
-        
-        <!-- Code Checker Section -->
-        <section id="code-checker" class="p-6 md:p-10 hidden">
-            <h1 class="text-4xl font-extrabold text-white mb-2">CODE COMPLIANCE CHECKER</h1>
-            <p class="text-gray-400 mb-8">Validate CPT, DX, and Modifiers instantly to preempt denials related to **NCCI bundling, invalid usage, or inconsistency.**</p>
-             
-            <div class="main-card p-6 md:p-8 mb-8 border-t-4" style="border-color: var(--color-secondary);">
-                <h2 class="text-2xl font-bold text-white mb-4">Input Codes for Triage</h2>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                    <div>
-                        <label for="cpt-input" class="block text-sm font-medium text-gray-300">CPT Code (e.g., 99213)</label>
-                        <input type="text" id="cpt-input" class="mt-1 block w-full rounded-md shadow-sm sm:text-sm p-3 font-mono" placeholder="99213" value="99213">
-                    </div>
-                    <div>
-                        <label for="dx-input" class="block text-sm font-medium text-gray-300">Diagnosis Code (e.g., I10)</label>
-                        <input type="text" id="dx-input" class="mt-1 block w-full rounded-md shadow-sm sm:text-sm p-3 font-mono" placeholder="R51" value="R51">
-                    </div>
-                     <div>
-                        <label for="modifier-input" class="block text-sm font-medium text-gray-300">Modifier (Optional, e.g., 25)</label>
-                        <input type="text" id="modifier-input" class="mt-1 block w-full rounded-md shadow-sm sm:text-sm p-3 font-mono" placeholder="25" value="25">
-                    </div>
-                    <button id="check-code-btn" class="col-span-1 w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-500 transition-colors flex items-center justify-center">
-                        <span id="code-checker-btn-text">RUN CODE AUDIT</span>
-                        <div class="spinner ml-2" id="code-checker-spinner"></div>
-                    </button>
-                </div>
-                 <p id="code-checker-error" class="text-red-400 mt-4 hidden text-center"></p>
-            </div>
-
-            <!-- Code Checker Output -->
-            <div id="code-checker-output" class="main-card p-6 md:p-8 hidden">
-                <div class="flex items-center justify-between border-b border-gray-700 pb-2 mb-4">
-                    <h2 class="text-2xl font-bold text-white" style="color: var(--color-secondary);">Audit Results: <span id="checker-verdict" class="ml-2">--</span></h2>
-                </div>
-                
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="space-y-4">
-                        <div class="p-3 rounded-lg bg-[#374151]">
-                            <h3 class="font-bold text-white mb-1" style="color: var(--color-primary);">CPT & Modifier Triage:</h3>
-                            <p id="cpt-analysis" class="text-gray-300 text-sm">--</p>
-                            <p id="modifier-analysis" class="text-gray-300 text-sm mt-2">--</p>
-                        </div>
-                        <div class="p-3 rounded-lg bg-[#374151]">
-                            <h3 class="font-bold text-white mb-1" style="color: var(--color-primary);">Diagnosis Consistency (Medical Necessity):</h3>
-                            <p id="dx-analysis" class="text-gray-300 text-sm">--</p>
-                        </div>
-                        <div class="p-3 rounded-lg bg-[#374151] border-l-4" style="border-color: var(--color-danger);">
-                            <h3 class="font-bold text-white mb-1" style="color: var(--color-danger);">Bundling Check (NCCI/PTP):</h3>
-                            <p id="bundling-check" class="text-gray-300 text-sm">--</p>
-                        </div>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-bold text-white mb-2 border-b border-gray-700 pb-1">Immediate Action Required</h3>
-                        <ul id="action-steps-list" class="space-y-2 text-sm text-gray-300 list-disc list-inside">
-                            <li>Check CPT/DX validity.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
 
 
-        <!-- Note Quality Check Section -->
-        <section id="quality-check" class="p-6 md:p-10 hidden">
-            <h1 class="text-4xl font-extrabold text-white mb-2">NOTE QUALITY CHECK: AUDIT READINESS</h1>
-             <p class="text-gray-400 mb-8">Audit your AR follow-up notes against the denial context to ensure **compliance, clarity, and maximize chance of successful reprocessing.**</p>
+        // --- FIRESTORE DASHBOARD LOGIC ---
 
-             <div class="main-card p-6 md:p-8 mb-8 border-t-4" style="border-color: #f59e0b;">
-                 <h2 class="text-2xl font-bold text-white mb-4">Input Note & Context</h2>
-                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <!-- Denial Context Input -->
-                     <div>
-                         <label for="quality-context-input" class="block text-sm font-medium text-gray-300">Original Denial Context / E.O.B. Summary</label>
-                         <textarea id="quality-context-input" rows="3" class="mt-1 block w-full rounded-md shadow-sm sm:text-sm p-3 font-mono" placeholder="E.g., 'Denied for timely filing, 10 days past limit.'"></textarea>
-                     </div>
-                     <!-- Note Input -->
-                     <div>
-                         <label for="follow-up-note" class="block text-sm font-medium text-gray-300">AR Follow-up Note Text</label>
-                         <textarea id="follow-up-note" rows="3" class="mt-1 block w-full rounded-md shadow-sm sm:text-sm p-3 font-mono" placeholder="E.g., 'Called payer, confirmed timely filing window is 90 days. Rep 123 advised re-submit under timely filing exception code X. Total AR due: $150.'"></textarea>
-                     </div>
-                 </div>
+        function getProtocolsCollectionRef(uid) {
+            // Private data path: /artifacts/{appId}/users/{userId}/protocols
+            return collection(db, 'artifacts', appId, 'users', uid, 'protocols');
+        }
 
-                 <button id="check-quality-btn" class="w-full text-black font-extrabold py-2 px-4 rounded-md transition-colors flex items-center justify-center mt-6" style="background-color: #f59e0b; hover-bg: #d97706;">
-                     <span id="quality-btn-text">ANALYZE NOTE</span>
-                     <div class="spinner ml-2" id="quality-spinner"></div>
-                 </button>
-                  <p id="quality-error" class="text-red-400 mt-4 hidden text-center"></p>
-             </div>
-
-             <!-- Quality Audit Output -->
-             <div class="main-card p-6 md:p-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-                 
-                 <!-- Score Ring -->
-                 <div class="flex flex-col items-center justify-center">
-                     <div class="relative w-36 h-36">
-                         <svg class="w-full h-full" viewBox="0 0 160 160">
-                             <circle class="progress-ring-circle-bg" cx="80" cy="80" r="70" fill="transparent" stroke-width="20" stroke="#374151"></circle>
-                             <circle class="progress-ring-circle" cx="80" cy="80" r="70" fill="transparent" stroke-width="20" stroke="#34d399" stroke-linecap="round" transform="rotate(-90 80 80)" style="stroke-dasharray: 439.8; stroke-dashoffset: 439.8; transition: stroke-dashoffset 0.5s;"></circle>
-                         </svg>
-                         <div class="absolute inset-0 flex flex-col items-center justify-center">
-                             <span id="accuracy-score" class="text-3xl font-extrabold text-[#34d399]">--</span>
-                             <span class="text-sm text-gray-500">SCORE</span>
-                         </div>
-                     </div>
-                 </div>
-
-                 <!-- Analysis and Risk -->
-                 <div class="lg:col-span-2 space-y-4">
-                     <div id="risk-analysis" class="p-3 rounded-md font-bold text-center border-l-4" style="background-color: #34d39922; color: #34d399; border-color: #34d399;">
-                         <span id="risk-level">LOW RISK</span>
-                     </div>
-                     <p id="accuracy-message" class="text-gray-300 text-sm italic">Ready for AI audit. Provide both the note and the denial context.</p>
-
-                     <h3 class="text-lg font-bold text-white mt-4 border-b border-gray-700 pb-1">AI Suggestions for Improvement</h3>
-                     <ul id="suggestions-list" class="space-y-2 text-sm text-gray-400 list-disc list-inside">
-                         <li>Click ANALYZE NOTE to start the AI audit.</li>
-                     </ul>
-                 </div>
-             </div>
-        </section>
-
-        <!-- Learning Hub Section -->
-        <section id="learning" class="p-6 md:p-10 hidden">
-             <h1 class="text-4xl font-extrabold text-white mb-2">LEARNING HUB: AR MASTERY MODULES</h1>
-             <p class="text-gray-400 mb-8">Generate a custom, targeted lesson module on any medical billing or AR topic to enhance your knowledge.</p>
-
-             <div class="main-card p-6 md:p-8 mb-8 border-t-4" style="border-color: var(--color-secondary);">
-                 <h2 class="text-2xl font-bold text-white mb-4">Generate Lesson</h2>
-                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                     <div class="col-span-1 md:col-span-3">
-                         <label for="learning-topic-input" class="block text-sm font-medium text-gray-300">Lesson Topic (e.g., "NCCI Modifier 59 Rules" or "Timely Filing Exceptions")</label>
-                         <input type="text" id="learning-topic-input" class="mt-1 block w-full rounded-md shadow-sm sm:text-sm p-3 font-mono" placeholder="Enter topic here..." value="Timely Filing Denials">
-                     </div>
-                     <button id="generate-lesson-btn" class="col-span-1 w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-500 transition-colors flex items-center justify-center">
-                         <span id="lesson-btn-text">GENERATE LESSON MODULE</span>
-                         <div class="spinner ml-2" id="lesson-spinner"></div>
-                     </button>
-                 </div>
-                 <p id="lesson-error" class="text-red-400 mt-4 hidden text-center"></p>
-             </div>
-
-             <!-- Lesson Output -->
-             <div id="lesson-output" class="main-card p-6 md:p-8 hidden">
-                 <h2 class="text-3xl font-extrabold mb-4" style="color: var(--color-primary);" id="lesson-title"></h2>
-
-                 <div class="lesson-card mb-6">
-                     <h3 class="text-xl font-bold text-white mb-2 border-b border-gray-700 pb-1" style="color: var(--color-secondary);">Detailed Explanation</h3>
-                     <p id="lesson-explanation" class="text-gray-300"></p>
-                 </div>
-
-                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                     <!-- Key Takeaways -->
-                     <div class="lg:col-span-2 space-y-4">
-                         <h3 class="text-xl font-bold text-white border-b border-gray-700 pb-1">Key Takeaways</h3>
-                         <ul id="lesson-takeaways" class="space-y-3">
-                             <!-- Populated by JS -->
-                         </ul>
-                     </div>
-
-                     <!-- Quiz -->
-                     <div class="lg:col-span-1 p-6 rounded-lg border border-gray-700 bg-[#374151]">
-                         <h3 class="text-xl font-bold text-white mb-3" style="color: #f59e0b;">Knowledge Check</h3>
-                         <p id="quiz-question" class="text-gray-300 font-medium mb-4"></p>
-                         <p id="quiz-answer" class="text-sm font-bold text-green-400 hidden mt-2"></p>
-                         <button id="show-answer-btn" class="w-full bg-gray-600 text-white py-1 px-4 rounded-md hover:bg-gray-500 transition-colors mt-3">Show Answer</button>
-                     </div>
-                 </div>
-             </div>
-        </section>
-
-        <!-- Activity Dashboard Section -->
-        <section id="dashboard" class="p-6 md:p-10 hidden">
-             <h1 class="text-4xl font-extrabold text-white mb-2">ACTIVITY DASHBOARD: AR MASTERY</h1>
-            <p class="text-gray-400 mb-8">Track your AI-generated resolution protocol history, performance, and key metrics.</p>
-
-            <!-- Key Metrics Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="main-card p-6 border-l-4" style="border-color: var(--color-primary);">
-                    <p class="text-sm text-gray-400">Protocols Logged</p>
-                    <p class="text-3xl font-extrabold text-white mt-1" id="total-protocols">0</p>
-                </div>
-                <div class="main-card p-6 border-l-4" style="border-color: #f59e0b;">
-                    <p class="text-sm text-gray-400">Critical Denials (CO-29/Filing)</p>
-                    <p class="text-3xl font-extrabold mt-1" id="logged-critical-count" style="color: #f59e0b;">0</p>
-                </div>
-                <div class="main-card p-6 border-l-4" style="border-color: var(--color-secondary);">
-                    <p class="text-sm text-gray-400">Average AI Confidence</p>
-                    <p class="text-3xl font-extrabold text-white mt-1" id="avg-confidence">--</p>
-                </div>
-            </div>
-
-            <!-- Activity Table -->
-            <div class="main-card overflow-x-auto">
-                <h2 class="text-2xl font-bold p-6 border-b border-gray-700">Recent Action Plans</h2>
-                <table class="min-w-full divide-y divide-gray-700">
-                    <thead>
-                        <tr>
-                            <th class="p-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Denial Code</th>
-                            <th class="p-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Payer</th>
-                            <th class="p-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Protocol Title</th>
-                            <th class="p-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Confidence</th>
-                            <th class="p-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date Logged</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-800" id="dashboard-activity-body">
-                        <!-- Data inserted by JavaScript -->
-                    </tbody>
-                </table>
-            </div>
-        </section>
-    </main>
-
-    <script>
-        // Global variable for API Key (Canvas runtime will provide if empty)
-        const apiKey = ""; 
-        const API_URL_BASE = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent";
-        
-        // Storage for the last generated protocol data
-        let currentProtocolData = null;
-
-        // --- CORE GEMINI API UTILITY FUNCTION WITH EXPONENTIAL BACKOFF ---
-        async function callGeminiAPI(systemInstruction, userQuery, responseSchema) {
-            const maxRetries = 3;
-            let delay = 1000;
-
-            const payload = {
-                contents: [{ parts: [{ text: userQuery }] }],
-                systemInstruction: { parts: [{ text: systemInstruction }] },
-            };
-
-            if (responseSchema) {
-                payload.generationConfig = {
-                    responseMimeType: "application/json",
-                    responseSchema: responseSchema,
-                };
+        function setupDashboardListener() {
+            if (!db || !isAuthReady) {
+                console.warn("Firestore or Auth not ready, skipping listener setup.");
+                return;
             }
-            
+
+            const protocolsQuery = query(getProtocolsCollectionRef(userId));
+
+            onSnapshot(protocolsQuery, (snapshot) => {
+                if (!isAuthReady) return; // Prevent callback execution before initial auth check
+
+                const protocols = [];
+                snapshot.forEach((doc) => {
+                    protocols.push({ id: doc.id, ...doc.data() });
+                });
+
+                renderDashboard(protocols);
+            }, (error) => {
+                console.error("Error setting up dashboard listener:", error);
+                dashboardMessage.textContent = "Error loading activity data.";
+            });
+        }
+
+        function renderDashboard(protocols) {
+            dashboardContent.innerHTML = '';
+            protocols.sort((a, b) => (b.timestamp?.toMillis() || 0) - (a.timestamp?.toMillis() || 0)); // Sort newest first
+
+            if (protocols.length === 0) {
+                dashboardMessage.textContent = "No action plans logged yet.";
+                return;
+            }
+
+            dashboardMessage.textContent = ''; // Clear loading message
+
+            protocols.forEach(p => {
+                const date = p.timestamp ? new Date(p.timestamp.toMillis()).toLocaleString() : 'N/A';
+                const element = document.createElement('div');
+                element.className = 'bg-gray-50 p-4 rounded-lg border border-gray-200 hover:shadow-md transition';
+                element.innerHTML = `
+                    <p class="text-xs font-semibold text-indigo-700">${date}</p>
+                    <p class="text-sm font-medium text-gray-900 mt-1 truncate" title="${p.goal}">Goal: ${p.goal}</p>
+                    <button class="text-xs text-indigo-600 mt-2 hover:text-indigo-800" onclick="viewProtocol('${p.id}')">View Protocol</button>
+                `;
+                dashboardContent.appendChild(element);
+            });
+        }
+
+        window.viewProtocol = (id) => {
+             // In a real app, you would fetch the full protocol. 
+             // For this single-file example, we just log a message.
+             console.log("Viewing full protocol for ID:", id);
+             // You could implement a modal here to display the full text.
+             alertModal('Protocol View', `In a full application, a modal would display the details for protocol ID: ${id}`);
+        }
+
+        function alertModal(title, message) {
+            const existingModal = document.getElementById('customAlertModal');
+            if (existingModal) existingModal.remove();
+
+            const modalHtml = `
+                <div id="customAlertModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
+                    <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-4">${title}</h3>
+                        <p class="text-gray-700 text-sm mb-6">${message}</p>
+                        <button onclick="document.getElementById('customAlertModal').remove()" class="w-full btn-primary text-white font-semibold py-2 rounded-lg">Close</button>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        window.logProtocol = async () => {
+            if (!currentProtocol || !db || !isAuthReady) {
+                console.error("Cannot log protocol: Protocol not generated, Firestore disabled, or Auth not ready.");
+                alertModal('Error', 'Cannot log protocol. Firestore is likely disabled because no configuration was found.');
+                return;
+            }
+
+            try {
+                // Ensure we only store essential, small, or serializable data
+                const logData = {
+                    goal: currentProtocol.goal,
+                    context: currentProtocol.context,
+                    protocol: currentProtocol.protocol, // Store the full text
+                    timestamp: serverTimestamp(),
+                    userId: userId,
+                };
+
+                await addDoc(getProtocolsCollectionRef(userId), logData);
+                console.log("Protocol successfully logged to Firestore.");
+                alertModal('Success!', 'The AR Protocol has been logged to your Activity Dashboard.');
+                logButton.disabled = true; // Disable until a new protocol is generated
+
+            } catch (error) {
+                console.error("Error writing protocol to Firestore:", error);
+                alertModal('Error', 'Failed to log the protocol. Check console for details.');
+            }
+        };
+
+        // --- GEMINI API LOGIC ---
+
+        // Simple exponential backoff retry mechanism for API calls
+        async function fetchWithRetry(url, options, maxRetries = 3) {
             for (let i = 0; i < maxRetries; i++) {
                 try {
-                    const response = await fetch(`${API_URL_BASE}?key=${apiKey}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
+                    const response = await fetch(url, options);
+                    if (response.status === 429) { // Rate limit
+                        throw new Error("Rate limit exceeded. Retrying...");
+                    }
                     if (!response.ok) {
-                        if (response.status === 429) { // Rate limit or transient error
-                            await new Promise(resolve => setTimeout(resolve, delay));
-                            delay *= 2; 
-                            continue;
-                        }
-                        throw new Error(`API returned status code ${response.status}`);
-                    }
-
-                    const result = await response.json();
-                    const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
-                    
-                    if (!jsonText) {
-                         throw new Error("Received empty content from the model.");
-                    }
-
-                    if (responseSchema) {
+                        // Throw error for other non-2xx status codes
+                        let errorDetail = await response.text();
                         try {
-                            return JSON.parse(jsonText);
+                            const errorBody = JSON.parse(errorDetail);
+                            errorDetail = JSON.stringify(errorBody);
                         } catch (e) {
-                            throw new Error("AI returned invalid structured JSON.");
+                            // errorDetail is already text
                         }
+                        throw new Error(`HTTP error! Status: ${response.status}. Details: ${errorDetail}`);
                     }
-
-                    return jsonText; // For unstructured text responses
-
+                    return response;
                 } catch (error) {
-                    if (i === maxRetries - 1) throw error; // Throw after final failed attempt
-                    
+                    // Only log error on the final retry attempt
+                    if (i === maxRetries - 1) {
+                        throw error; 
+                    }
+                    // Exponential backoff
+                    const delay = Math.pow(2, i) * 1000 + Math.random() * 1000;
                     await new Promise(resolve => setTimeout(resolve, delay));
-                    delay *= 2; 
                 }
             }
         }
-        
-        // --- UI RENDER FUNCTIONS (Globally accessible within the main script) ---
 
-        window.renderActionPlans = (plans, errorState = false) => {
-             const dashboardActivityBody = document.getElementById('dashboard-activity-body');
-             const loggedCriticalCount = document.getElementById('logged-critical-count');
-             const avgConfidenceEl = document.getElementById('avg-confidence');
-             const totalProtocolsEl = document.getElementById('total-protocols');
-
-             // Defensive check for elements before manipulation
-             if (!dashboardActivityBody || !loggedCriticalCount || !avgConfidenceEl) return; 
-
-             if (errorState) {
-                 dashboardActivityBody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-red-400">Error loading dashboard data.</td></tr>`;
-                 return;
-             }
-
-             dashboardActivityBody.innerHTML = '';
-             let criticalCount = 0;
-             let totalConfidence = 0;
-             
-             if (plans.length === 0) {
-                 dashboardActivityBody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-gray-400">No action plans logged yet.</td></tr>`;
-                 loggedCriticalCount.textContent = 0;
-                 avgConfidenceEl.textContent = '--';
-                 totalProtocolsEl.textContent = 0;
-                 return;
-             }
-             
-             plans.forEach(plan => {
-                 const date = plan.date ? new Date(plan.date.toMillis()).toLocaleString() : 'N/A';
-                 const confidenceColor = plan.confidence > 90 ? 'text-green-400' : (plan.confidence > 75 ? 'text-yellow-400' : 'text-red-400');
-                 const row = document.createElement('tr');
-                 row.className = 'border-b border-gray-800 hover:bg-gray-800 transition-colors';
-                 row.innerHTML = `
-                     <td class="p-3 font-extrabold text-sm" style="color: var(--color-secondary);">${plan.denialCode || 'N/A'}</td>
-                     <td class="p-3 text-gray-300 text-sm">${plan.payer || 'N/A'}</td>
-                     <td class="p-3 text-gray-400 text-sm">${plan.protocolTitle}</td>
-                     <td class="p-3 text-sm ${confidenceColor} font-bold">${plan.confidence}%</td>
-                     <td class="p-3 text-gray-500 text-xs">${date}</td>
-                 `;
-                 dashboardActivityBody.appendChild(row);
-                 
-                 if (plan.denialCode && (plan.denialCode.includes('CO-29') || plan.denialCode.toUpperCase().includes('FILING LIMIT'))) {
-                     criticalCount++;
-                 }
-                 totalConfidence += plan.confidence;
-             });
-             
-             loggedCriticalCount.textContent = criticalCount;
-             avgConfidenceEl.textContent = plans.length > 0 ? `${Math.round(totalConfidence / plans.length)}%` : '--';
-             totalProtocolsEl.textContent = plans.length;
-        }
-
-        function updateResolverUI(data) {
-            const protocolTitleEl = document.getElementById('protocol-title');
-            const aiConfidenceEl = document.getElementById('ai-confidence');
-            const confidenceSummaryEl = document.getElementById('confidence-summary');
-            const protocolStepsEl = document.getElementById('protocol-steps');
-            const extractedPayerEl = document.getElementById('extracted-payer');
-            const extractedCodeEl = document.getElementById('extracted-code');
-            const resolutionOutput = document.getElementById('resolution-output');
-            const saveToDashboardBtn = document.getElementById('save-to-dashboard-btn');
-            const appealGeneratorBox = document.getElementById('appeal-generator-box');
-
-
-            extractedPayerEl.textContent = data.payer || 'Unknown Payer';
-            extractedCodeEl.textContent = data.denialCode || 'N/A';
-            
-            protocolTitleEl.textContent = data.protocolTitle;
-            aiConfidenceEl.textContent = `${data.confidence}%`;
-            confidenceSummaryEl.textContent = data.summary;
-            
-            const confidenceColor = data.confidence > 90 ? 'var(--color-primary)' : (data.confidence > 75 ? '#f59e0b' : '#f87171');
-            aiConfidenceEl.style.color = confidenceColor;
-
-            protocolStepsEl.innerHTML = '';
-            data.steps.forEach((step, index) => {
-                const li = document.createElement('li');
-                li.className = 'flex items-start text-gray-300';
-                li.innerHTML = `
-                    <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-extrabold text-sm shadow-md" style="background-color: var(--color-secondary); color: var(--color-text-light);">${index + 1}</div>
-                    <div class="ml-4">
-                        <h3 class="font-bold text-white">${step.heading}</h3>
-                        <p class="text-gray-400 text-xs font-mono">${step.details}</p>
-                    </div>
-                `;
-                protocolStepsEl.appendChild(li);
-            });
-            resolutionOutput.classList.remove('hidden');
-            saveToDashboardBtn.classList.remove('hidden');
-
-             // Show appeal generator if required
-            if (currentProtocolData && currentProtocolData.requiresAppeal) {
-                appealGeneratorBox.classList.remove('hidden');
-            } else {
-                appealGeneratorBox.classList.add('hidden');
-            }
-        }
-
-        // --- API SCHEMAS ---
-        const resolverSchema = {
-            type: "OBJECT",
-            properties: {
-                denialCode: { type: "STRING", description: "The primary CARC or RARC code identified from the input text (e.g., 'CO-45', 'B12'). If unsure, use the closest common code. If no code, use 'N/A'." },
-                payer: { type: "STRING", description: "The Payer name identified from the input text (e.g., 'BCBS PPO', 'Medicare'). If unsure, use 'Unknown Payer'." },
-                protocolTitle: { type: "STRING", description: "A concise title for the resolution protocol, summarizing the issue." },
-                confidence: { type: "INTEGER", description: "The AI's confidence percentage (0-100) that this protocol will resolve the denial." },
-                requiresAppeal: { type: "BOOLEAN", description: "TRUE if the denial requires a formal appeal process (e.g., CO-29, CO-45, Medical Necessity), FALSE otherwise (e.g., CO-97, Simple Reprocessing)." },
-                summary: { type: "STRING", description: "A one-sentence summary of the confidence level." },
-                steps: {
-                    type: "ARRAY",
-                    description: "3-5 distinct, actionable steps for the AR specialist.",
-                    items: {
-                        type: "OBJECT",
-                        properties: {
-                            heading: { type: "STRING", description: "The bolded title of the step (e.g., 'Step 1: Payer Contact')." },
-                            details: { type: "STRING", description: "The specific action to take." }
-                        },
-                        propertyOrdering: ["heading", "details"]
-                    }
-                }
-            },
-            propertyOrdering: ["denialCode", "payer", "protocolTitle", "confidence", "requiresAppeal", "summary", "steps"]
-        };
-        
-        // --- DENIAL RESOLVER LOGIC ---
-        async function generateResolutionProtocol() {
-            const denialInput = document.getElementById('denial-reason-input').value.trim();
-            const resolveError = document.getElementById('resolve-error');
-            const resolveBtnText = document.getElementById('resolve-btn-text');
-            const resolveSpinner = document.getElementById('resolve-spinner');
-            const resolveBtn = document.getElementById('resolve-btn');
-            const resolutionOutput = document.getElementById('resolution-output');
-            const saveMessage = document.getElementById('save-message');
-            const appealGeneratorBox = document.getElementById('appeal-generator-box');
-
-
-            if (!denialInput) {
-                resolveError.textContent = "Please provide the raw denial reason text.";
-                resolveError.classList.remove('hidden');
-                return;
+        async function callGeminiAPI(prompt, systemInstruction) {
+            if (!apiKey) {
+                throw new Error("API Key is missing. Cannot call the model.");
             }
 
-            resolveError.classList.add('hidden');
-            resolveBtnText.textContent = 'GENERATING...';
-            resolveSpinner.style.display = 'inline-block';
-            resolveBtn.classList.add('loading');
-            resolutionOutput.classList.add('hidden');
-            appealGeneratorBox.classList.add('hidden'); 
-            saveMessage.classList.add('hidden');
-            currentProtocolData = null;
-
-            const systemPrompt = `You are a world-class, certified Accounts Receivable (AR) specialist. Your task is to analyze the raw denial text provided, extract the Payer and Denial Code, and generate an immediate, evidence-based resolution protocol. Crucially, determine if the denial, based on standard AR procedures (e.g. Timely Filing, Medical Necessity), typically requires a formal appeal. The response MUST be a JSON object adhering strictly to the provided schema.`;
-            const userQuery = `Analyze the raw denial text and provide the structured resolution protocol: Raw Denial Text: "${denialInput}"`;
-
-            try {
-                const data = await callGeminiAPI(systemPrompt, userQuery, resolverSchema);
-                
-                currentProtocolData = {
-                    denialCode: data.denialCode || 'N/A',
-                    payer: data.payer || 'Unknown Payer',
-                    protocolTitle: data.protocolTitle,
-                    confidence: data.confidence,
-                    requiresAppeal: data.requiresAppeal,
-                    denialReason: denialInput 
-                };
-                
-                updateResolverUI(data);
-                
-            } catch (error) {
-                resolveError.textContent = "AI Protocol Generation failed. Please try again.";
-                resolveError.classList.remove('hidden');
-            } finally {
-                resolveBtnText.textContent = 'ANALYZE & GENERATE PROTOCOL';
-                resolveSpinner.style.display = 'none';
-                resolveBtn.classList.remove('loading');
-            }
-        }
-
-        // --- APPEAL GENERATOR LOGIC ---
-        const appealSchema = {
-            type: "OBJECT",
-            properties: {
-                documentChecklist: {
-                    type: "ARRAY",
-                    items: { type: "STRING" },
-                    description: "3-5 essential documents or records needed for a successful appeal based on the denial."
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                systemInstruction: { parts: [{ text: systemInstruction }] },
+                // Use a strong, structured generation format
+                generationConfig: {
+                    temperature: 0.2,
+                    topK: 40,
                 },
-                appealVerbiage: {
-                    type: "STRING",
-                    description: "A professional, structured draft appeal letter or verbiage (max 300 words) addressing the issue."
-                }
-            },
-            propertyOrdering: ["documentChecklist", "appealVerbiage"]
-        };
-
-        async function generateAppealContent() {
-            const appealErrorEl = document.getElementById('appeal-error');
-            const appealBtnText = document.getElementById('appeal-btn-text');
-            const appealSpinner = document.getElementById('appeal-spinner');
-            const generateAppealBtn = document.getElementById('generate-appeal-btn');
-            const appealOutput = document.getElementById('appeal-output');
-
-            if (!currentProtocolData || !currentProtocolData.denialReason) {
-                appealErrorEl.textContent = "Please run the Denial Resolver first.";
-                appealErrorEl.classList.remove('hidden');
-                return;
-            }
-
-            appealErrorEl.classList.add('hidden');
-            appealBtnText.textContent = 'GENERATING...';
-            appealSpinner.style.display = 'inline-block';
-            generateAppealBtn.classList.add('loading');
-            appealOutput.classList.add('hidden');
-
-            const systemPrompt = `You are an expert medical coder and appeal specialist. Based on the provided raw denial information, you must generate a precise list of required appeal documents and a compelling, professional draft appeal verbiage. The output MUST be a JSON object adhering to the provided schema.`;
-            const userQuery = `Generate the appeal package for this denial: Denial Reason: "${currentProtocolData.denialReason}" Denial Code: ${currentProtocolData.denialCode}`;
-
-            try {
-                const data = await callGeminiAPI(systemPrompt, userQuery, appealSchema);
-                
-                const appealChecklistEl = document.getElementById('appeal-checklist');
-                const appealVerbiageOutput = document.getElementById('appeal-verbiage-output');
-
-                appealChecklistEl.innerHTML = data.documentChecklist.map(item => `<li>${item}</li>`).join('');
-                appealVerbiageOutput.value = data.appealVerbiage;
-                document.getElementById('copy-message').classList.add('hidden');
-                appealOutput.classList.remove('hidden');
-            } catch (error) {
-                appealErrorEl.textContent = "AI Appeal Generation failed. Please try again.";
-                appealErrorEl.classList.remove('hidden');
-            } finally {
-                appealBtnText.textContent = 'GENERATE APPEAL PACKAGE';
-                appealSpinner.style.display = 'none';
-                generateAppealBtn.classList.remove('loading');
-            }
-        }
-        
-        // --- CODE CHECKER LOGIC ---
-        const codeCheckerSchema = {
-            type: "OBJECT",
-            properties: {
-                cptAnalysis: { type: "STRING" },
-                dxAnalysis: { type: "STRING" },
-                modifierAnalysis: { type: "STRING" },
-                bundlingCheck: { type: "STRING" },
-                overallVerdict: { type: "STRING", description: "CLEAN, REQUIRES CORRECTION, or INVALID COMBINATION." },
-                actionSteps: { type: "ARRAY", items: { type: "STRING" } }
-            },
-            propertyOrdering: ["cptAnalysis", "dxAnalysis", "modifierAnalysis", "bundlingCheck", "overallVerdict", "actionSteps"]
-        };
-
-        async function runCodeCheck() {
-            const cpt = document.getElementById('cpt-input').value.trim();
-            const dx = document.getElementById('dx-input').value.trim();
-            const modifier = document.getElementById('modifier-input').value.trim();
-            const codeCheckerError = document.getElementById('code-checker-error');
-            const checkCodeBtn = document.getElementById('check-code-btn');
-            const codeCheckerBtnText = document.getElementById('code-checker-btn-text');
-            const codeCheckerSpinner = document.getElementById('code-checker-spinner');
-            const codeCheckerOutput = document.getElementById('code-checker-output');
-
-            if (!cpt || !dx) {
-                codeCheckerError.textContent = "Please enter at least the CPT and Diagnosis code.";
-                codeCheckerError.classList.remove('hidden');
-                return;
-            }
-
-            codeCheckerError.classList.add('hidden');
-            codeCheckerBtnText.textContent = 'AUDITING...';
-            codeCheckerSpinner.style.display = 'inline-block';
-            checkCodeBtn.classList.add('loading');
-            codeCheckerOutput.classList.add('hidden');
-
-            const systemPrompt = `You are a certified medical coding and NCCI expert. Analyze the provided CPT, DX, and Modifier combination for validity, medical necessity consistency, and NCCI/PTP bundling rules. Provide a structured, concise analysis. The response MUST be a JSON object adhering to the provided schema.`;
-            const userQuery = `Run a compliance audit on the following codes: CPT: ${cpt} Diagnosis: ${dx} Modifier: ${modifier || 'None'}`;
-
-            try {
-                const data = await callGeminiAPI(systemPrompt, userQuery, codeCheckerSchema);
-                
-                const verdictEl = document.getElementById('checker-verdict');
-                const stepsListEl = document.getElementById('action-steps-list');
-                const verdict = data.overallVerdict.toUpperCase();
-
-                document.getElementById('cpt-analysis').textContent = data.cptAnalysis;
-                document.getElementById('dx-analysis').textContent = data.dxAnalysis;
-                document.getElementById('modifier-analysis').textContent = data.modifierAnalysis;
-                document.getElementById('bundling-check').textContent = data.bundlingCheck;
-
-                let verdictColor = 'var(--color-primary)'; 
-                if (verdict.includes('INVALID')) { verdictColor = 'var(--color-danger)'; } 
-                else if (verdict.includes('CORRECTION')) { verdictColor = '#f59e0b'; }
-                
-                verdictEl.textContent = verdict;
-                verdictEl.style.color = verdictColor;
-
-                stepsListEl.innerHTML = data.actionSteps.map(s => `<li>${s}</li>`).join('');
-                
-                codeCheckerOutput.classList.remove('hidden');
-
-            } catch (error) {
-                codeCheckerError.textContent = "AI Code Audit failed. Please try again.";
-                codeCheckerError.classList.remove('hidden');
-            } finally {
-                codeCheckerBtnText.textContent = 'RUN CODE AUDIT';
-                codeCheckerSpinner.style.display = 'none';
-                checkCodeBtn.classList.remove('loading');
-            }
-        }
-        
-        // --- NOTE QUALITY CHECK LOGIC ---
-        const qualitySchema = {
-            type: "OBJECT",
-            properties: {
-                score: { type: "INTEGER" },
-                risk: { type: "STRING" },
-                message: { type: "STRING" },
-                suggestions: { type: "ARRAY", items: { type: "STRING" } }
-            },
-            propertyOrdering: ["score", "risk", "message", "suggestions"]
-        };
-        
-        async function analyzeNoteQuality() {
-            const noteText = document.getElementById('follow-up-note').value.trim();
-            const denialContext = document.getElementById('quality-context-input').value.trim();
-            const qualityError = document.getElementById('quality-error');
-            const qualityBtnText = document.getElementById('quality-btn-text');
-            const qualitySpinner = document.getElementById('quality-spinner');
-            const checkQualityBtn = document.getElementById('check-quality-btn');
-            const accuracyScoreEl = document.getElementById('accuracy-score');
-            const accuracyMessageEl = document.getElementById('accuracy-message');
-            const suggestionsListEl = document.getElementById('suggestions-list');
-            const riskLevelEl = document.getElementById('risk-level');
-            const riskAnalysisCard = document.getElementById('risk-analysis');
-
-
-            if (!noteText || !denialContext) {
-                qualityError.textContent = "Please enter both the Follow-up Note and the Contextual Denial Information.";
-                qualityError.classList.remove('hidden');
-                return;
-            }
-
-            qualityError.classList.add('hidden');
-            qualityBtnText.textContent = 'ANALYZING...';
-            qualitySpinner.style.display = 'inline-block';
-            checkQualityBtn.classList.add('loading');
-
-            const systemPrompt = `You are a compliance officer and AR auditing AI. Evaluate the provided follow-up note based on the given denial context. Your analysis must focus on compliance, clarity, audit-readiness, and actionable next steps. Assign a score (50-100) and a risk level (CRITICAL, HIGH, MEDIUM, LOW). The response MUST be a JSON object adhering to the provided schema.`;
-            const userQuery = `Analyze the following AR follow-up note against the denial context: - Denial Context/E.O.B.: "${denialContext}" - Follow-up Note: "${noteText}" - Evaluation Focus: Does the note adequately address the specific issues and risks (e.g., timely filing, pricing) mentioned in the context, and is it audit-compliant?`;
-
-            try {
-                const data = await callGeminiAPI(systemPrompt, userQuery, qualitySchema);
-                
-                const score = Math.max(50, Math.min(100, data.score)); 
-                const maxDashoffset = 434;
-
-                accuracyScoreEl.textContent = `${score}%`;
-                accuracyMessageEl.textContent = data.message;
-
-                const dashoffset = maxDashoffset - (score / 100) * maxDashoffset;
-                document.querySelector('.progress-ring-circle').style.strokeDashoffset = dashoffset;
-
-                let riskColor = '#34d399'; 
-                let riskLevelText = data.risk;
-                if (data.risk.toUpperCase().includes('CRITICAL')) { riskColor = '#f87171'; } 
-                else if (data.risk.toUpperCase().includes('HIGH')) { riskColor = '#f59e0b'; } 
-                else if (data.risk.toUpperCase().includes('MEDIUM')) { riskColor = '#3b82f6'; }
-
-                document.querySelector('.progress-ring-circle').style.stroke = riskColor;
-                accuracyScoreEl.style.color = riskColor;
-
-                riskLevelEl.textContent = `${riskLevelText.toUpperCase()} RISK`;
-                riskAnalysisCard.style.backgroundColor = `${riskColor}22`; 
-                riskAnalysisCard.style.color = riskColor;
-                riskAnalysisCard.style.borderColor = riskColor;
-
-                suggestionsListEl.innerHTML = data.suggestions.map(s => `<li class="text-gray-400">${s}</li>`).join('');
-                
-            } catch (error) {
-                qualityError.textContent = "AI Note Analysis failed. Please try again.";
-                qualityError.classList.remove('hidden');
-            } finally {
-                qualityBtnText.textContent = 'ANALYZE NOTE';
-                qualitySpinner.style.display = 'none';
-                checkQualityBtn.classList.remove('loading');
-            }
-        }
-        
-        // --- LEARNING HUB LOGIC ---
-        const learningSchema = {
-            type: "OBJECT",
-            properties: {
-                moduleTitle: { type: "STRING" },
-                explanation: { type: "STRING" },
-                keyTakeaways: { type: "ARRAY", items: { type: "STRING" } },
-                quizQuestion: { type: "STRING" },
-                quizAnswer: { type: "STRING" }
-            },
-            propertyOrdering: ["moduleTitle", "explanation", "keyTakeaways", "quizQuestion", "quizAnswer"]
-        };
-        
-        async function generateLearningContent() {
-            const topicInput = document.getElementById('learning-topic-input').value.trim();
-            const lessonError = document.getElementById('lesson-error');
-            const lessonBtnText = document.getElementById('lesson-btn-text');
-            const lessonSpinner = document.getElementById('lesson-spinner');
-            const generateLessonBtn = document.getElementById('generate-lesson-btn');
-            const lessonOutput = document.getElementById('lesson-output');
-            const showAnswerBtn = document.getElementById('show-answer-btn');
-
-            if (!topicInput) {
-                lessonError.textContent = "Please enter a topic to generate a lesson module.";
-                lessonError.classList.remove('hidden');
-                return;
-            }
-
-            lessonError.classList.add('hidden');
-            lessonBtnText.textContent = 'GENERATING...';
-            lessonSpinner.style.display = 'inline-block';
-            generateLessonBtn.classList.add('loading');
-            lessonOutput.classList.add('hidden');
-            document.getElementById('quiz-answer').classList.add('hidden');
-
-            const systemPrompt = `You are a specialized AR training instructor. Create a detailed, actionable learning module based on the user's request. The module must be highly relevant to medical billing, AR management, and denial resolution. Provide a concise quiz question and answer. The response MUST be a JSON object adhering to the provided schema.`;
-            const userQuery = `Generate a learning module about the following topic: "${topicInput}"`;
-
-            try {
-                const data = await callGeminiAPI(systemPrompt, userQuery, learningSchema);
-                
-                document.getElementById('lesson-title').textContent = data.moduleTitle;
-                document.getElementById('lesson-explanation').textContent = data.explanation;
-                document.getElementById('quiz-question').textContent = data.quizQuestion;
-                document.getElementById('quiz-answer').textContent = `Answer: ${data.quizAnswer}`;
-                
-                const takeawaysEl = document.getElementById('lesson-takeaways');
-                takeawaysEl.innerHTML = data.keyTakeaways.map(t => `<li class="key-takeaway-item text-gray-400">${t}</li>`).join('');
-                
-                showAnswerBtn.textContent = 'Show Answer';
-                document.getElementById('quiz-answer').classList.add('hidden');
-                lessonOutput.classList.remove('hidden');
-
-            } catch (error) {
-                lessonError.textContent = "AI Lesson Generation failed. Please try again.";
-                lessonError.classList.remove('hidden');
-            } finally {
-                lessonBtnText.textContent = 'GENERATE LESSON MODULE';
-                lessonSpinner.style.display = 'none';
-                generateLessonBtn.classList.remove('loading');
-            }
-        }
-        
-        // --- GENERAL UI & EVENT LISTENERS ---
-
-        document.addEventListener('DOMContentLoaded', function() {
-            
-            // --- Helper Functions ---
-            const sections = {
-                dashboard: document.getElementById('dashboard'),
-                resolver: document.getElementById('resolver'),
-                learning: document.getElementById('learning'),
-                quality: document.getElementById('quality-check'),
-                'code-checker': document.getElementById('code-checker'),
             };
 
-            const navLinks = {
-                dashboard: document.getElementById('nav-dashboard'),
-                resolver: document.getElementById('nav-resolver'),
-                learning: document.getElementById('nav-learning'),
-                quality: document.getElementById('nav-quality'),
-                'code-checker': document.getElementById('nav-code-checker'),
+            const url = `${API_URL_BASE}?key=${apiKey}`;
+
+            const options = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
             };
 
-            const switchView = (view) => {
-                Object.values(sections).forEach(section => section.classList.add('hidden'));
-                sections[view].classList.remove('hidden');
+            const response = await fetchWithRetry(url, options);
+            const result = await response.json();
 
-                Object.values(navLinks).forEach(link => link.classList.remove('active-nav'));
-                Object.values(navLinks).forEach(link => link.classList.remove('text-slate-300'));
-                navLinks[view].classList.add('active-nav');
-                navLinks[view].classList.remove('text-slate-300');
-            };
-
-            window.updateUserIdDisplay = (uid) => {
-                 const userIdDisplay = document.getElementById('display-user-id');
-                 if (userIdDisplay) userIdDisplay.textContent = uid;
+            const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+            
+            if (!text) {
+                 // Check if there are block reasons or errors
+                const reason = result.candidates?.[0]?.finishReason || 'Unknown';
+                const message = result.error?.message || 'No text generated.';
+                throw new Error(`API failed to generate text. Finish Reason: ${reason}. Error: ${message}`);
             }
 
-            // --- Listener Setup ---
+            return text;
+        }
+
+        // --- MAIN APPLICATION LOGIC ---
+
+        window.generateProtocol = async () => {
+            const goal = document.getElementById('goalInput').value.trim();
+            const context = document.getElementById('contextInput').value.trim();
             
-            // 1. Navigation Listeners
-            Object.keys(navLinks).forEach(key => {
-                if (navLinks[key]) {
-                    navLinks[key].addEventListener('click', (e) => {
-                        e.preventDefault();
-                        switchView(key);
-                        // Trigger dashboard listener setup when navigating to the dashboard
-                        if (key === 'dashboard' && window.userId && window.setupDashboardListener) {
-                             window.setupDashboardListener(window.userId);
-                        }
-                    });
-                }
-            });
-
-            // 2. Denial Resolver Listeners
-            const resolveBtn = document.getElementById('resolve-btn');
-            if(resolveBtn) resolveBtn.addEventListener('click', generateResolutionProtocol);
+            statusMessage.classList.add('hidden');
             
-            const saveToDashboardBtn = document.getElementById('save-to-dashboard-btn');
-            const saveMessage = document.getElementById('save-message');
-            if(saveToDashboardBtn) saveToDashboardBtn.addEventListener('click', async () => {
-                saveMessage.classList.add('hidden');
-                saveToDashboardBtn.disabled = true;
-                if (currentProtocolData && window.logActionPlan) {
-                    const result = await window.logActionPlan(currentProtocolData);
-                    if (result.success) {
-                        saveMessage.textContent = "Protocol logged successfully! Dashboard updated.";
-                        saveMessage.classList.remove('hidden');
-                    } else {
-                        saveMessage.textContent = "Error logging plan. See console.";
-                        saveMessage.classList.remove('hidden');
-                    }
-                } else {
-                     saveMessage.textContent = "No protocol to save.";
-                     saveMessage.classList.remove('hidden');
-                }
-                saveToDashboardBtn.disabled = false;
-            });
-
-            // 3. Appeal Generator Listeners
-            const generateAppealBtn = document.getElementById('generate-appeal-btn');
-            const copyVerbiageBtn = document.getElementById('copy-verbiage-btn');
-            const appealVerbiageOutput = document.getElementById('appeal-verbiage-output');
-            const copyMessageEl = document.getElementById('copy-message');
-
-            if(generateAppealBtn) generateAppealBtn.addEventListener('click', generateAppealContent);
-            if(copyVerbiageBtn) copyVerbiageBtn.addEventListener('click', () => {
-                if (appealVerbiageOutput) {
-                    appealVerbiageOutput.select();
-                    appealVerbiageOutput.setSelectionRange(0, 99999); 
-                    try {
-                        document.execCommand('copy');
-                        copyMessageEl.classList.remove('hidden');
-                        setTimeout(() => copyMessageEl.classList.add('hidden'), 3000);
-                    } catch (err) {
-                        console.error('Failed to copy text', err);
-                    }
-                }
-            });
-
-            // 4. Code Checker Listeners
-            const checkCodeBtn = document.getElementById('check-code-btn');
-            if(checkCodeBtn) checkCodeBtn.addEventListener('click', runCodeCheck);
-
-            // 5. Quality Check Listeners
-            const checkQualityBtn = document.getElementById('check-quality-btn');
-            if(checkQualityBtn) checkQualityBtn.addEventListener('click', analyzeNoteQuality);
-
-            // 6. Learning Hub Listeners
-            const generateLessonBtn = document.getElementById('generate-lesson-btn');
-            const showAnswerBtn = document.getElementById('show-answer-btn');
-            const quizAnswerEl = document.getElementById('quiz-answer');
-
-            if(generateLessonBtn) generateLessonBtn.addEventListener('click', generateLearningContent);
-            if(showAnswerBtn) showAnswerBtn.addEventListener('click', () => {
-                const isHidden = quizAnswerEl.classList.contains('hidden');
-                quizAnswerEl.classList.toggle('hidden');
-                showAnswerBtn.textContent = isHidden ? 'Hide Answer' : 'Show Answer';
-            });
-            
-            // --- Initial Setup ---
-            switchView('resolver');
-            
-            // Initialize Quality Check UI to blank state
-            if(document.getElementById('risk-analysis')) {
-                 const riskAnalysisCard = document.getElementById('risk-analysis');
-                 const accuracyScoreEl = document.getElementById('accuracy-score');
-                 const riskLevelEl = document.getElementById('risk-level');
-                 const suggestionsListEl = document.getElementById('suggestions-list');
-
-                 // Set initial UI state
-                 if (accuracyScoreEl) accuracyScoreEl.textContent = '75%';
-                 if (riskLevelEl) riskLevelEl.textContent = 'MEDIUM RISK';
-                 if (riskAnalysisCard) {
-                     riskAnalysisCard.style.backgroundColor = '#3b82f622'; 
-                     riskAnalysisCard.style.color = '#3b82f6';
-                     riskAnalysisCard.style.borderColor = '#3b82f6';
-                 }
-                 if (suggestionsListEl) {
-                     suggestionsListEl.innerHTML = `<li class="text-gray-400">Click ANALYZE NOTE to start the AI audit.</li>`;
-                 }
-                 if(document.querySelector('.progress-ring-circle')) {
-                     document.querySelector('.progress-ring-circle').style.strokeDashoffset = 108.45; // 75% offset
-                     document.querySelector('.progress-ring-circle').style.stroke = '#3b82f6';
-                 }
+            if (!goal || !context) {
+                statusMessage.textContent = 'Please fill out both the Goal and Context fields.';
+                statusMessage.classList.remove('hidden');
+                return;
             }
-        });
+
+            // UI state: Start loading
+            generateButton.disabled = true;
+            logButton.disabled = true;
+            buttonText.textContent = 'Generating...';
+            loadingSpinner.classList.remove('hidden');
+            protocolOutput.classList.add('hidden');
+            
+            currentProtocol = null;
+
+            const systemInstruction = `You are an expert AI system for creating augmented reality (AR) guided technical protocols. Your response MUST be a single, structured, step-by-step list in Markdown format. The protocol must be safe, efficient, and directly address the user's goal while adhering to the specified constraints. Each step must be concise, actionable, and suitable for display in an AR headset. DO NOT include any introductory or concluding text, only the markdown list.`;
+            
+            const prompt = `Goal: ${goal}\nContext/Constraints: ${context}\n\nGenerate the complete AR-guided technical protocol with mandatory safety checks, using clear step-by-step instructions.`;
+
+            try {
+                const generatedText = await callGeminiAPI(prompt, systemInstruction);
+                
+                // Final cleaning and formatting
+                const markdownContent = generatedText.startsWith('```markdown') 
+                    ? generatedText.substring(13, generatedText.lastIndexOf('```'))
+                    : generatedText;
+
+                protocolOutput.innerHTML = formatProtocolForHTML(markdownContent);
+                protocolOutput.classList.remove('hidden');
+
+                // Store for logging
+                currentProtocol = { goal, context, protocol: markdownContent };
+                logButton.disabled = !firebaseConfig; // Only enable if Firebase config is present
+                
+            } catch (error) {
+                console.error("AI Protocol Generation Error:", error);
+                statusMessage.textContent = `AI Protocol Generation failed. Please try again. Error: ${error.message.split('. Details:')[0]}`;
+                statusMessage.classList.remove('hidden');
+            } finally {
+                // UI state: Finish loading
+                generateButton.disabled = false;
+                buttonText.textContent = 'Generate AR Protocol';
+                loadingSpinner.classList.add('hidden');
+            }
+        };
+        
+        // Simple Markdown-to-HTML formatting (converts markdown lists to HTML lists)
+        function formatProtocolForHTML(markdown) {
+            // Replace simple markdown list markers (* or -) with HTML list structure
+            let html = markdown.replace(/^[\s]*[-*+]\s+(.*)/gm, (match, content) => {
+                // Apply Tailwind classes for better list styling
+                return `<li class="ml-4 pl-1 text-gray-700 mb-2 list-disc">${content.trim()}</li>`;
+            });
+
+            // Wrap in an unordered list if list items were found
+            if (html.includes('<li')) {
+                 html = `<ul class="list-inside p-0">${html}</ul>`;
+            }
+            
+            // Basic bolding (for safety checks etc.)
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); 
+
+            return html;
+        }
+
     </script>
 </body>
 </html>
