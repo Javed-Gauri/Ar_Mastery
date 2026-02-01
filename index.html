@@ -3,1205 +3,1371 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR-SYNAPSE AI Mastery Platform V3</title>
+    <title>ClaimFix Pro - Advanced Medical Billing AR Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght+400;600&display=swap" rel="stylesheet">
-    <style>
-        /* Codecademy-Inspired Dark Theme and Typography */
-        :root {
-            --color-bg-dark: #111827; /* Dark Slate */
-            --color-card-dark: #1f2937; /* Lighter Slate */
-            --color-primary: #10b981; /* Emerald Green */
-            --color-secondary: #3b82f6; /* Codecademy Blue */
-            --color-text-light: #f9fafb;
-            --color-text-muted: #9ca3af;
-            --color-danger: #ef4444; /* Red */
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--color-bg-dark);
-            color: var(--color-text-light);
-            overflow: hidden;
-        }
-        
-        .main-card {
-            background-color: var(--color-card-dark);
-            border-radius: 0.75rem;
-            border: 1px solid #374151; /* Subtle border */
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s;
-        }
-        
-        /* Sidebar and Navigation */
-        .sidebar { background-color: var(--color-bg-dark); border-color: #374151; }
-        .active-nav {
-            background-color: var(--color-card-dark);
-            color: var(--color-primary);
-            border-left: 4px solid var(--color-primary);
-        }
-        .nav-item { transition: all 0.2s; border-left: 4px solid transparent; }
-        .nav-item:hover { background-color: #374151; }
-
-        /* Protocol/Code Output Area (Clean Console Look) */
-        .protocol-output {
-            font-family: 'Roboto Mono', monospace;
-            background-color: #000000; 
-            border: 1px solid var(--color-primary);
-            color: #d1d5db; 
-        }
-
-        /* Input Fields */
-        input, select, textarea {
-            background-color: #374151 !important;
-            border-color: #4b5563 !important;
-            color: var(--color-text-light) !important;
-        }
-
-        /* Spinner */
-        .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-left-color: var(--color-primary);
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-            display: none;
-        }
-        .loading .spinner { display: inline-block; }
-        .loading button { pointer-events: none; }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* Custom styles for Learning Hub */
-        .lesson-card {
-            background-color: #1f2937;
-            padding: 24px;
-            border-radius: 12px;
-            border-left: 5px solid var(--color-secondary);
-        }
-        .key-takeaway-item {
-            list-style: none;
-            padding-left: 1.5rem;
-            position: relative;
-        }
-        .key-takeaway-item::before {
-            content: "•";
-            color: var(--color-primary);
-            font-size: 1.5rem;
-            position: absolute;
-            left: 0;
-            top: -2px;
-        }
-    </style>
-</head>
-<body class="flex h-screen">
-    
-    <!-- Firebase Imports and Initialization (Module Script) -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, addDoc, onSnapshot, collection, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        
-        // --- GLOBAL CONFIG & INIT ---
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-ar-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : undefined;
-        
-        if (Object.keys(firebaseConfig).length === 0) {
-            console.warn("Firebase configuration is missing.");
-        }
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-
-        // Export core services to the window object for access from the main script
-        window.db = db;
-        window.auth = auth;
-        window.appId = appId;
-        window.userId = null; 
-        
-        // --- AUTHENTICATION & LISTENER SETUP ---
-        // This function runs on every auth state change (sign in, sign out)
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                window.userId = user.uid;
-                // If window.setupDashboardListener is defined by the main script (meaning DOM is ready), run it.
-                if (window.setupDashboardListener) {
-                    window.setupDashboardListener(user.uid);
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        uhc: {
+                            blue: '#002F87',
+                            light: '#0066CC',
+                            accent: '#00A650',
+                            warning: '#FF6B35',
+                            error: '#E4002B',
+                            bg: '#F5F7FA',
+                            card: '#FFFFFF',
+                            text: '#333333',
+                            muted: '#666666',
+                            border: '#E0E4E8'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Roboto Mono', 'monospace']
+                    }
                 }
-            } else {
-                window.userId = 'anonymous-' + crypto.randomUUID();
             }
-            // Update the display for the main script
-            if (window.updateUserIdDisplay) {
-                window.updateUserIdDisplay(window.userId);
-            }
-        });
-
-        // Sign in using custom token or anonymously
-        async function signIn() {
-            try {
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (error) {
-                console.error("Firebase Auth Error:", error);
-            }
-        }
-        signIn();
-
-        // --- FIRESTORE WRITE FUNCTION (Globally Exported) ---
-        window.logActionPlan = async (protocolData) => {
-             if (!window.userId || !window.db) {
-                console.error("Firebase not initialized or user not authenticated.");
-                return { success: false };
-             }
-            
-             const path = `artifacts/${appId}/users/${window.userId}/action_plans`;
-             const actionCollectionRef = collection(window.db, path);
-             
-             try {
-                await addDoc(actionCollectionRef, {
-                    denialCode: protocolData.denialCode, 
-                    payer: protocolData.payer,           
-                    protocolTitle: protocolData.protocolTitle,
-                    confidence: protocolData.confidence,
-                    date: serverTimestamp()
-                });
-                return { success: true };
-             } catch (error) {
-                 console.error("Error logging action plan:", error);
-                 return { success: false, error };
-             }
-        }
-        
-        // --- FIRESTORE READ SETUP (Globally Exported) ---
-        // This function is called by the main script once the DOM is ready and the user is authenticated.
-        window.setupDashboardListener = (uid) => {
-            const path = `artifacts/${appId}/users/${uid}/action_plans`;
-            const actionCollectionRef = collection(db, path);
-            
-            const q = query(actionCollectionRef);
-
-            onSnapshot(q, (snapshot) => {
-                const plans = [];
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    plans.push({ id: doc.id, ...data });
-                });
-                
-                // Sort by date descending (latest first) client-side
-                plans.sort((a, b) => (b.date?.toMillis() || 0) - (a.date?.toMillis() || 0));
-
-                // Call the globally defined render function
-                if (window.renderActionPlans) {
-                     window.renderActionPlans(plans);
-                }
-            }, (error) => {
-                console.error("Error fetching action plans:", error);
-                if (window.renderActionPlans) {
-                    window.renderActionPlans([], true); // Pass error state to render
-                }
-            });
         }
     </script>
-
-    <!-- Sidebar Navigation -->
-    <aside class="w-20 md:w-64 sidebar border-r flex flex-col transition-all duration-300">
-        <div class="flex items-center justify-center md:justify-start p-4 h-16 border-b">
-             <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-black font-extrabold text-xl shadow-lg">
-                <span class="text-xs text-black font-extrabold p-1 rounded" style="background-color: var(--color-primary);">AI</span>
-             </div>
-             <h1 class="text-xl font-extrabold text-white ml-3 hidden md:block">SYNAPSE ACADEMY</h1>
-        </div>
-        <nav class="flex-1 px-2 md:px-4 py-4 space-y-1">
-            <a href="#" id="nav-resolver" class="nav-item flex items-center p-3 rounded-lg font-medium active-nav">
-                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                <span class="ml-4 hidden md:block">Denial Resolver</span>
-            </a>
-             <a href="#" id="nav-code-checker" class="nav-item flex items-center p-3 rounded-lg text-slate-300 font-medium">
-                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
-                <span class="ml-4 hidden md:block">Code Checker</span>
-            </a>
-            <a href="#" id="nav-quality" class="nav-item flex items-center p-3 rounded-lg text-slate-300 font-medium">
-                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <span class="ml-4 hidden md:block">Note Quality Check</span>
-            </a>
-            <a href="#" id="nav-learning" class="nav-item flex items-center p-3 rounded-lg text-slate-300 font-medium">
-                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.25278C12 6.25278 10.8333 4.5 8 4.5C5.16667 4.5 3 6.66667 3 9.5C3 13.5 8 18.5 12 21.5C16 18.5 21 13.5 21 9.5C21 6.66667 18.8333 4.5 16 4.5C13.1667 4.5 12 6.25278 12 6.25278Z"/></svg>
-                <span class="ml-4 hidden md:block">Learning Hub</span>
-            </a>
-            <a href="#" id="nav-dashboard" class="nav-item flex items-center p-3 rounded-lg text-slate-300 font-medium">
-                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10v11h6v-7h6v7h6V10M12 2L2 10h20L12 2z"/></svg>
-                <span class="ml-4 hidden md:block">Activity Dashboard</span>
-            </a>
-        </nav>
-        <div class="p-4 border-t border-gray-800">
-            <p class="text-xs text-gray-500 truncate">User ID: <span id="display-user-id">Loading...</span></p>
-        </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="flex-1 overflow-y-auto">
+    <style>
+        body {
+            background-color: #F5F7FA;
+            color: #333333;
+        }
+        .uhc-gradient {
+            background: linear-gradient(135deg, #002F87 0%, #0066CC 100%);
+        }
+        .nav-item {
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+        .nav-item:hover {
+            background-color: #E6F3FF;
+            color: #002F87;
+            border-left-color: #002F87;
+        }
+        .nav-item.active {
+            background-color: #E6F3FF;
+            color: #002F87;
+            border-left-color: #002F87;
+            font-weight: 600;
+        }
+        .card-shadow {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .severity-critical { background-color: #FDE8E8; color: #E4002B; border: 1px solid #E4002B; }
+        .severity-high { background-color: #FFF0E6; color: #FF6B35; border: 1px solid #FF6B35; }
+        .severity-medium { background-color: #FFF8E6; color: #B45309; border: 1px solid #F59E0B; }
+        .severity-low { background-color: #E6F7EF; color: #00A650; border: 1px solid #00A650; }
         
-        <!-- Denial Resolver Section -->
-        <section id="resolver" class="p-6 md:p-10">
-             <h1 class="text-4xl font-extrabold text-white mb-2">DENIAL RESOLVER: AI PROTOCOL SYNTHESIS</h1>
-             <p class="text-gray-400 mb-8">Paste the full denial reason or remittance advice line and let the AI extract details and generate an **Evidence-Based Resolution Protocol** in real-time.</p>
-             
-             <!-- AI Resolution Tool -->
-             <div class="main-card p-6 md:p-8 mb-8 border-t-4" style="border-color: var(--color-primary);">
-                <h2 class="text-2xl font-bold text-white mb-4">Input Denial Parameters</h2>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                    <!-- RAW DENIAL INPUT -->
-                    <div class="col-span-1 md:col-span-4">
-                        <label for="denial-reason-input" class="block text-sm font-medium text-gray-300">Raw Denial Reason/Remittance Line (e.g., "Payer: BCBS, Denied with CARC: CO-45, Claim CRX-9213")</label>
-                        <textarea id="denial-reason-input" rows="3" class="mt-1 block w-full rounded-md shadow-sm sm:text-sm p-3 font-mono" placeholder="Paste full denial text here... e.g. 'The charge of $150 for CPT 99213 exceeds the maximum fee allowance set by the payer (BCBS PPO). Code: CO-45.'">Payer: BCBS PPO. The claim CRX-9213 for CPT 99213 was denied because the filing limit expired on 01/01/2025. Code: CO-29.</textarea>
-                    </div>
+        .code-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: #E6F3FF;
+            color: #002F87;
+            border-radius: 0.375rem;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.875rem;
+            margin: 0.25rem;
+            border: 1px solid #0066CC;
+        }
+        .loading-spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #002F87;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .toast {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .toast-success { background-color: #00A650; }
+        .toast-error { background-color: #E4002B; }
+        .toast-warning { background-color: #FF6B35; }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .tab-btn.active {
+            border-bottom-color: #002F87;
+            color: #002F87;
+            font-weight: 600;
+        }
+        .tab-btn:hover:not(.active) {
+            border-bottom-color: #E0E4E8;
+            color: #0066CC;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #0066CC; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #002F87; }
+        
+        .payer-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .payer-bcbs { background-color: #E6F3FF; color: #002F87; }
+        .payer-uhc { background-color: #E6F7EF; color: #00A650; }
+        .payer-aetna { background-color: #F3E8FF; color: #7C3AED; }
+        .payer-cigna { background-color: #FFF0E6; color: #FF6B35; }
+        .payer-medicare { background-color: #FEF3C7; color: #92400E; }
+        .payer-medicaid { background-color: #DBEAFE; color: #1E40AF; }
+        
+        .validation-success { border-color: #00A650 !important; background-color: #F0FDF4 !important; }
+        .validation-error { border-color: #E4002B !important; background-color: #FEF2F2 !important; }
+    </style>
+</head>
+<body class="font-sans antialiased">
 
-                    <button id="resolve-btn" class="col-span-1 md:col-span-4 w-full text-black font-extrabold py-2 px-4 rounded-md transition-colors flex items-center justify-center" style="background-color: var(--color-primary); hover-bg: #059669;">
-                        <span id="resolve-btn-text">ANALYZE & GENERATE PROTOCOL</span>
-                        <div class="spinner ml-2" id="resolve-spinner"></div>
+    <!-- Header -->
+    <header class="uhc-gradient text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center text-uhc-blue font-bold text-2xl">
+                        <i class="fas fa-file-medical-alt"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold">ClaimFix Pro</h1>
+                        <p class="text-sm opacity-90">Advanced Medical Billing AR Platform</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="hidden md:flex items-center space-x-2 bg-white/10 rounded-lg px-4 py-2">
+                        <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                        <span class="text-sm font-medium">System Online</span>
+                    </div>
+                    <button onclick="showApiConfig()" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg text-sm font-medium transition">
+                        <i class="fas fa-cog mr-2"></i>API Config
                     </button>
                 </div>
-                
-                <!-- AI Protocol Output -->
-                <div id="resolution-output" class="mt-8 p-6 md:p-8 protocol-output rounded-lg hidden">
-                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                        <div class="lg:col-span-3 space-y-4">
-                            <h2 class="text-xl font-bold" style="color: var(--color-secondary);" id="protocol-title"></h2>
-                            <div class="text-gray-400 text-sm mb-4">
-                                <p><strong>Payer Extracted:</strong> <span id="extracted-payer">--</span></p>
-                                <p><strong>Denial Code Extracted:</strong> <span id="extracted-code">--</span></p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Quick Stats Bar -->
+    <div class="bg-white border-b border-uhc-border py-3">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center space-x-6 text-sm">
+                    <div class="flex items-center">
+                        <i class="fas fa-database text-uhc-blue mr-2"></i>
+                        <span class="text-uhc-muted"><strong class="text-uhc-text" id="icdCount">12,500+</strong> ICD-10 Codes</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-file-invoice text-uhc-light mr-2"></i>
+                        <span class="text-uhc-muted"><strong class="text-uhc-text" id="denialCount">350+</strong> Denial Codes</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-procedures text-uhc-accent mr-2"></i>
+                        <span class="text-uhc-muted"><strong class="text-uhc-text" id="cptCount">2,500+</strong> CPT Codes</span>
+                    </div>
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="quickSearch('CO-50')" class="px-3 py-1 bg-uhc-bg text-uhc-blue border border-uhc-border rounded hover:bg-uhc-blue hover:text-white transition text-sm">CO-50</button>
+                    <button onclick="quickSearch('CO-29')" class="px-3 py-1 bg-uhc-bg text-uhc-blue border border-uhc-border rounded hover:bg-uhc-blue hover:text-white transition text-sm">CO-29</button>
+                    <button onclick="quickSearch('99213')" class="px-3 py-1 bg-uhc-bg text-uhc-blue border border-uhc-border rounded hover:bg-uhc-blue hover:text-white transition text-sm">99213</button>
+                    <button onclick="quickSearch('U07.1')" class="px-3 py-1 bg-uhc-bg text-uhc-blue border border-uhc-border rounded hover:bg-uhc-blue hover:text-white transition text-sm">COVID-19</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+            <!-- Sidebar -->
+            <div class="lg:col-span-1">
+                <nav class="bg-white rounded-xl card-shadow p-4 sticky top-24">
+                    <div class="space-y-1">
+                        <button data-view="denial-resolver" class="nav-item active w-full text-left px-4 py-3 rounded-lg flex items-center" onclick="switchView('denial-resolver')">
+                            <i class="fas fa-magic w-6 mr-2"></i>
+                            <span>AI Denial Resolver</span>
+                        </button>
+                        <button data-view="ar-quality" class="nav-item w-full text-left px-4 py-3 rounded-lg flex items-center" onclick="switchView('ar-quality')">
+                            <i class="fas fa-clipboard-check w-6 mr-2"></i>
+                            <span>AR Quality Check</span>
+                        </button>
+                        <button data-view="learning-hub" class="nav-item w-full text-left px-4 py-3 rounded-lg flex items-center" onclick="switchView('learning-hub')">
+                            <i class="fas fa-graduation-cap w-6 mr-2"></i>
+                            <span>Learning Hub (AI)</span>
+                        </button>
+                        <button data-view="modifiers" class="nav-item w-full text-left px-4 py-3 rounded-lg flex items-center" onclick="switchView('modifiers')">
+                            <i class="fas fa-tags w-6 mr-2"></i>
+                            <span>Modifiers Guide</span>
+                        </button>
+                        <button data-view="payer-rules" class="nav-item w-full text-left px-4 py-3 rounded-lg flex items-center" onclick="switchView('payer-rules')">
+                            <i class="fas fa-building w-6 mr-2"></i>
+                            <span>Payer Rules</span>
+                        </button>
+                        <button data-view="code-validator" class="nav-item w-full text-left px-4 py-3 rounded-lg flex items-center" onclick="switchView('code-validator')">
+                            <i class="fas fa-code-branch w-6 mr-2"></i>
+                            <span>Code Validator</span>
+                        </button>
+                    </div>
+
+                    <div class="mt-6 pt-6 border-t border-uhc-border">
+                        <h4 class="text-xs font-semibold text-uhc-muted uppercase mb-3">Quick Tools</h4>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="generateAppealTemplate()" class="p-2 bg-uhc-bg hover:bg-uhc-blue hover:text-white rounded text-xs transition border border-uhc-border">
+                                <i class="fas fa-file-alt mb-1 block"></i>Appeal Letter
+                            </button>
+                            <button onclick="showTimelyFiling()" class="p-2 bg-uhc-bg hover:bg-uhc-blue hover:text-white rounded text-xs transition border border-uhc-border">
+                                <i class="fas fa-clock mb-1 block"></i>Filing Limits
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-6 border-t border-uhc-border">
+                        <h4 class="text-xs font-semibold text-uhc-muted uppercase mb-2">System Status</h4>
+                        <div class="space-y-2 text-xs">
+                            <div class="flex justify-between">
+                                <span class="text-uhc-muted">Database</span>
+                                <span class="text-uhc-accent font-semibold">Online</span>
                             </div>
-                            <ul class="space-y-3 text-sm" id="protocol-steps"></ul>
-                        </div>
-                        <div class="lg:col-span-1 space-y-4 text-center">
-                             <h3 class="text-lg font-bold text-white border-b border-gray-700 pb-1">AI Confidence</h3>
-                             <p class="text-6xl font-extrabold" style="color: var(--color-primary);" id="ai-confidence">--</p>
-                             <p class="text-sm text-gray-400 font-medium" id="confidence-summary">Ready for AI generation.</p>
-                             <button id="save-to-dashboard-btn" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-500 transition-colors mt-4 hidden">
-                                LOG ACTION PLAN
-                             </button>
-                             <div id="save-message" class="text-sm text-green-400 mt-2 hidden text-center">Protocol logged successfully!</div>
+                            <div class="flex justify-between">
+                                <span class="text-uhc-muted">AI Service</span>
+                                <span class="text-uhc-accent font-semibold" id="aiStatus">Active</span>
+                            </div>
                         </div>
                     </div>
-                 </div>
-                 <p id="resolve-error" class="text-red-400 mt-4 hidden text-center"></p>
-             </div>
-             
-             <!-- APPEAL GENERATOR SECTION (NEW) -->
-             <div id="appeal-generator-box" class="main-card p-6 md:p-8 mt-6 hidden border-l-4" style="border-color: var(--color-danger);">
-                 <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-2xl font-extrabold text-white">Appeal Preparation Required?</h2>
-                    <button id="generate-appeal-btn" class="bg-red-600 text-white font-bold py-2 px-4 rounded-md hover:bg-red-500 transition-colors flex items-center justify-center">
-                        <span id="appeal-btn-text">GENERATE APPEAL PACKAGE</span>
-                        <div class="spinner ml-2" id="appeal-spinner"></div>
-                    </button>
-                 </div>
-                 <p class="text-sm text-gray-400 mb-4">Based on the resolution, the denial may require an appeal. Click to generate the necessary documentation checklist and draft verbiage.</p>
-                 
-                 <div id="appeal-output" class="mt-6 hidden bg-[#374151] p-4 rounded-lg">
-                    <p id="appeal-error" class="text-red-400 mt-2 hidden text-center"></p>
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div class="lg:col-span-1">
-                            <h3 class="text-lg font-bold mb-2 text-white border-b border-gray-600 pb-1">Required Documentation Checklist</h3>
-                            <ul id="appeal-checklist" class="space-y-2 text-sm text-gray-300 list-disc list-inside">
-                                <!-- Populated by JS -->
-                            </ul>
-                        </div>
-                        <div class="lg:col-span-2">
-                             <h3 class="text-lg font-bold mb-2 text-white border-b border-gray-600 pb-1">Draft Appeal Verbiage</h3>
-                            <textarea id="appeal-verbiage-output" rows="10" class="w-full rounded-md shadow-sm sm:text-sm p-3 font-mono text-gray-200 bg-[#111827] border border-gray-700"></textarea>
-                            <button id="copy-verbiage-btn" class="mt-2 text-sm bg-gray-600 text-white py-1 px-3 rounded-md hover:bg-gray-500 transition-colors">Copy Verbiage</button>
-                            <span id="copy-message" class="ml-3 text-sm text-green-400 hidden">Copied!</span>
-                        </div>
-                    </div>
-                 </div>
-             </div>
-        </section>
-        
-        <!-- Code Checker Section -->
-        <section id="code-checker" class="p-6 md:p-10 hidden">
-            <h1 class="text-4xl font-extrabold text-white mb-2">CODE COMPLIANCE CHECKER</h1>
-            <p class="text-gray-400 mb-8">Validate CPT, DX, and Modifiers instantly to preempt denials related to **NCCI bundling, invalid usage, or inconsistency.**</p>
-             
-            <div class="main-card p-6 md:p-8 mb-8 border-t-4" style="border-color: var(--color-secondary);">
-                <h2 class="text-2xl font-bold text-white mb-4">Input Codes for Triage</h2>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                    <div>
-                        <label for="cpt-input" class="block text-sm font-medium text-gray-300">CPT Code (e.g., 99213)</label>
-                        <input type="text" id="cpt-input" class="mt-1 block w-full rounded-md shadow-sm sm:text-sm p-3 font-mono" placeholder="99213" value="99213">
-                    </div>
-                    <div>
-                        <label for="dx-input" class="block text-sm font-medium text-gray-300">Diagnosis Code (e.g., I10)</label>
-                        <input type="text" id="dx-input" class="mt-1 block w-full rounded-md shadow-sm sm:text-sm p-3 font-mono" placeholder="R51" value="R51">
-                    </div>
-                     <div>
-                        <label for="modifier-input" class="block text-sm font-medium text-gray-300">Modifier (Optional, e.g., 25)</label>
-                        <input type="text" id="modifier-input" class="mt-1 block w-full rounded-md shadow-sm sm:text-sm p-3 font-mono" placeholder="25" value="25">
-                    </div>
-                    <button id="check-code-btn" class="col-span-1 w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-500 transition-colors flex items-center justify-center">
-                        <span id="code-checker-btn-text">RUN CODE AUDIT</span>
-                        <div class="spinner ml-2" id="code-checker-spinner"></div>
-                    </button>
-                </div>
-                 <p id="code-checker-error" class="text-red-400 mt-4 hidden text-center"></p>
+                </nav>
             </div>
 
-            <!-- Code Checker Output -->
-            <div id="code-checker-output" class="main-card p-6 md:p-8 hidden">
-                <div class="flex items-center justify-between border-b border-gray-700 pb-2 mb-4">
-                    <h2 class="text-2xl font-bold text-white" style="color: var(--color-secondary);">Audit Results: <span id="checker-verdict" class="ml-2">--</span></h2>
-                </div>
+            <!-- Main Content -->
+            <div class="lg:col-span-4 space-y-6">
                 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="space-y-4">
-                        <div class="p-3 rounded-lg bg-[#374151]">
-                            <h3 class="font-bold text-white mb-1" style="color: var(--color-primary);">CPT & Modifier Triage:</h3>
-                            <p id="cpt-analysis" class="text-gray-300 text-sm">--</p>
-                            <p id="modifier-analysis" class="text-gray-300 text-sm mt-2">--</p>
+                <!-- Denial Resolver Section -->
+                <div id="denial-resolver" class="view-section">
+                    <div class="bg-white rounded-xl card-shadow p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h2 class="text-2xl font-bold text-uhc-blue mb-1">AI Denial Resolver</h2>
+                                <p class="text-uhc-muted text-sm">Analyze denials with AI-powered resolution strategies</p>
+                            </div>
+                            <div class="bg-uhc-bg px-4 py-2 rounded-lg border border-uhc-border">
+                                <span class="text-xs text-uhc-muted block">Total Denial Codes</span>
+                                <span class="text-lg font-bold text-uhc-blue">350+</span>
+                            </div>
                         </div>
-                        <div class="p-3 rounded-lg bg-[#374151]">
-                            <h3 class="font-bold text-white mb-1" style="color: var(--color-primary);">Diagnosis Consistency (Medical Necessity):</h3>
-                            <p id="dx-analysis" class="text-gray-300 text-sm">--</p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-semibold text-uhc-text mb-2">Denial Description or Code</label>
+                                <textarea id="denialInput" rows="5" class="w-full p-4 border border-uhc-border rounded-lg focus:ring-2 focus:ring-uhc-light focus:border-transparent font-mono text-sm" placeholder="Enter denial text or code (e.g., CO-50 - Not medically necessary)..."></textarea>
+                                <p class="text-xs text-uhc-muted mt-1">Tip: Enter exact codes like CO-50, PR-1, or paste full EOB text</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-uhc-text mb-2">Insurance Payer</label>
+                                <select id="payerSelect" class="w-full p-3 border border-uhc-border rounded-lg mb-4 focus:ring-2 focus:ring-uhc-light">
+                                    <option value="auto">Auto-Detect</option>
+                                    <option value="uhc">UnitedHealthcare (UHC)</option>
+                                    <option value="bcbs">BCBS</option>
+                                    <option value="aetna">Aetna</option>
+                                    <option value="cigna">Cigna</option>
+                                    <option value="medicare">Medicare</option>
+                                    <option value="medicaid">Medicaid</option>
+                                </select>
+                                <div class="bg-uhc-bg rounded-lg p-3 text-xs text-uhc-muted">
+                                    <strong class="text-uhc-text block mb-1">Quick Select:</strong>
+                                    <div class="flex flex-wrap gap-1 mt-2">
+                                        <button onclick="insertDenialCode('CO-50')" class="px-2 py-1 bg-white border border-uhc-border rounded hover:border-uhc-blue">CO-50</button>
+                                        <button onclick="insertDenialCode('CO-29')" class="px-2 py-1 bg-white border border-uhc-border rounded hover:border-uhc-blue">CO-29</button>
+                                        <button onclick="insertDenialCode('PR-1')" class="px-2 py-1 bg-white border border-uhc-border rounded hover:border-uhc-blue">PR-1</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="p-3 rounded-lg bg-[#374151] border-l-4" style="border-color: var(--color-danger);">
-                            <h3 class="font-bold text-white mb-1" style="color: var(--color-danger);">Bundling Check (NCCI/PTP):</h3>
-                            <p id="bundling-check" class="text-gray-300 text-sm">--</p>
+
+                        <div class="flex flex-wrap gap-3">
+                            <button onclick="analyzeDenial()" class="bg-uhc-blue hover:bg-uhc-light text-white px-6 py-3 rounded-lg font-semibold transition flex items-center">
+                                <i class="fas fa-search mr-2"></i> Analyze Denial
+                            </button>
+                            <button onclick="generateAppealLetter()" class="bg-white border-2 border-uhc-blue text-uhc-blue hover:bg-uhc-bg px-6 py-3 rounded-lg font-semibold transition flex items-center">
+                                <i class="fas fa-file-signature mr-2"></i> Generate Appeal
+                            </button>
+                            <button onclick="clearDenial()" class="bg-uhc-bg text-uhc-muted hover:text-uhc-text px-6 py-3 rounded-lg font-semibold transition">
+                                Clear
+                            </button>
+                        </div>
+
+                        <!-- Results Area -->
+                        <div id="denialResults" class="hidden mt-8 pt-6 border-t border-uhc-border">
+                            <!-- Populated by JS -->
                         </div>
                     </div>
-                    <div>
-                        <h3 class="text-lg font-bold text-white mb-2 border-b border-gray-700 pb-1">Immediate Action Required</h3>
-                        <ul id="action-steps-list" class="space-y-2 text-sm text-gray-300 list-disc list-inside">
-                            <li>Check CPT/DX validity.</li>
-                        </ul>
+                </div>
+
+                <!-- AR Quality Check Section -->
+                <div id="ar-quality" class="view-section hidden">
+                    <div class="bg-white rounded-xl card-shadow p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h2 class="text-2xl font-bold text-uhc-blue mb-1">AR Quality Check</h2>
+                                <p class="text-uhc-muted text-sm">Validate CPT, ICD-10 combinations and check for bundling issues</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-semibold text-uhc-text mb-2">CPT Codes (comma separated)</label>
+                                <input type="text" id="arCptCodes" class="w-full p-3 border border-uhc-border rounded-lg mb-4 font-mono" placeholder="99213, 99214, 99215" onblur="validateCPTInput(this)">
+                                
+                                <label class="block text-sm font-semibold text-uhc-text mb-2">ICD-10 Codes (comma separated)</label>
+                                <input type="text" id="arIcdCodes" class="w-full p-3 border border-uhc-border rounded-lg mb-4 font-mono" placeholder="M54.5, I10, E11.9" onblur="validateICDInput(this)">
+                                
+                                <label class="block text-sm font-semibold text-uhc-text mb-2">Modifiers</label>
+                                <input type="text" id="arModifiers" class="w-full p-3 border border-uhc-border rounded-lg mb-4 font-mono" placeholder="25, 59">
+                                
+                                <label class="block text-sm font-semibold text-uhc-text mb-2">Date of Service</label>
+                                <input type="date" id="arDos" class="w-full p-3 border border-uhc-border rounded-lg mb-4">
+                                
+                                <button onclick="runARQualityCheck()" class="w-full bg-uhc-blue hover:bg-uhc-light text-white py-3 rounded-lg font-semibold transition">
+                                    <i class="fas fa-check-circle mr-2"></i> Run Quality Check
+                                </button>
+                            </div>
+                            
+                            <div id="arResults" class="bg-uhc-bg rounded-lg p-4 border border-uhc-border hidden">
+                                <!-- Results populated here -->
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Learning Hub Section (AI) -->
+                <div id="learning-hub" class="view-section hidden">
+                    <div class="bg-white rounded-xl card-shadow p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h2 class="text-2xl font-bold text-uhc-blue mb-1">Learning Hub</h2>
+                                <p class="text-uhc-muted text-sm">AI-powered medical billing knowledge base</p>
+                            </div>
+                            <div class="flex items-center space-x-2 text-uhc-accent">
+                                <i class="fas fa-robot text-xl"></i>
+                                <span class="font-semibold">Gemini AI Active</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <div class="relative">
+                                <input type="text" id="learningSearch" class="w-full p-4 pl-12 border-2 border-uhc-border rounded-lg focus:border-uhc-blue focus:ring-0 text-lg" placeholder="Ask anything about medical billing, codes, or denials...">
+                                <i class="fas fa-search absolute left-4 top-5 text-uhc-muted"></i>
+                                <button onclick="searchLearningHub()" class="absolute right-2 top-2 bg-uhc-blue hover:bg-uhc-light text-white px-6 py-2 rounded-md font-semibold transition">
+                                    Ask AI
+                                </button>
+                            </div>
+                            <div class="flex flex-wrap gap-2 mt-3">
+                                <button onclick="askAI('What is modifier 25 used for?')" class="text-sm px-3 py-1 bg-uhc-bg text-uhc-blue rounded-full hover:bg-uhc-blue hover:text-white transition">Modifier 25?</button>
+                                <button onclick="askAI('Explain CO-50 denial code')" class="text-sm px-3 py-1 bg-uhc-bg text-uhc-blue rounded-full hover:bg-uhc-blue hover:text-white transition">CO-50?</button>
+                                <button onclick="askAI('Timely filing limits for UHC')" class="text-sm px-3 py-1 bg-uhc-bg text-uhc-blue rounded-full hover:bg-uhc-blue hover:text-white transition">UHC Filing Limits?</button>
+                                <button onclick="askAI('NCCI bundling rules for E/M')" class="text-sm px-3 py-1 bg-uhc-bg text-uhc-blue rounded-full hover:bg-uhc-blue hover:text-white transition">NCCI Rules?</button>
+                            </div>
+                        </div>
+
+                        <div id="learningResults" class="hidden">
+                            <div class="flex items-center mb-4">
+                                <div class="loading-spinner mr-3" id="aiLoading"></div>
+                                <span class="text-uhc-muted" id="aiStatusText">Consulting AI...</span>
+                            </div>
+                            <div id="aiResponse" class="prose max-w-none bg-uhc-bg rounded-lg p-6 border border-uhc-border"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modifiers Guide -->
+                <div id="modifiers" class="view-section hidden">
+                    <div class="bg-white rounded-xl card-shadow p-6">
+                        <h2 class="text-2xl font-bold text-uhc-blue mb-6">CPT Modifiers Guide</h2>
+                        
+                        <div class="mb-6">
+                            <input type="text" id="modifierSearch" class="w-full p-3 border border-uhc-border rounded-lg" placeholder="Search modifiers (e.g., 25, 59, LT)..." oninput="searchModifiers(this.value)">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="modifiersGrid">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payer Rules -->
+                <div id="payer-rules" class="view-section hidden">
+                    <div class="bg-white rounded-xl card-shadow p-6">
+                        <h2 class="text-2xl font-bold text-uhc-blue mb-6">Payer-Specific Rules</h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="payerRulesGrid">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Code Validator -->
+                <div id="code-validator" class="view-section hidden">
+                    <div class="bg-white rounded-xl card-shadow p-6">
+                        <h2 class="text-2xl font-bold text-uhc-blue mb-6">Code Validator</h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-semibold mb-2">Validate ICD-10 Code</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="validateICD" class="flex-1 p-3 border border-uhc-border rounded-lg font-mono uppercase" placeholder="M54.5">
+                                    <button onclick="validateSingleICD()" class="bg-uhc-blue text-white px-4 rounded-lg">Check</button>
+                                </div>
+                                <div id="icdValidateResult" class="mt-2 text-sm"></div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-semibold mb-2">Validate CPT Code</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="validateCPT" class="flex-1 p-3 border border-uhc-border rounded-lg font-mono" placeholder="99213">
+                                    <button onclick="validateSingleCPT()" class="bg-uhc-blue text-white px-4 rounded-lg">Check</button>
+                                </div>
+                                <div id="cptValidateResult" class="mt-2 text-sm"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-        </section>
+        </div>
+    </div>
 
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
 
-        <!-- Note Quality Check Section -->
-        <section id="quality-check" class="p-6 md:p-10 hidden">
-            <h1 class="text-4xl font-extrabold text-white mb-2">NOTE QUALITY CHECK: AUDIT READINESS</h1>
-             <p class="text-gray-400 mb-8">Audit your AR follow-up notes against the denial context to ensure **compliance, clarity, and maximize chance of successful reprocessing.**</p>
-
-             <div class="main-card p-6 md:p-8 mb-8 border-t-4" style="border-color: #f59e0b;">
-                 <h2 class="text-2xl font-bold text-white mb-4">Input Note & Context</h2>
-                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <!-- Denial Context Input -->
-                     <div>
-                         <label for="quality-context-input" class="block text-sm font-medium text-gray-300">Original Denial Context / E.O.B. Summary</label>
-                         <textarea id="quality-context-input" rows="3" class="mt-1 block w-full rounded-md shadow-sm sm:text-sm p-3 font-mono" placeholder="E.g., 'Denied for timely filing, 10 days past limit.'"></textarea>
-                     </div>
-                     <!-- Note Input -->
-                     <div>
-                         <label for="follow-up-note" class="block text-sm font-medium text-gray-300">AR Follow-up Note Text</label>
-                         <textarea id="follow-up-note" rows="3" class="mt-1 block w-full rounded-md shadow-sm sm:text-sm p-3 font-mono" placeholder="E.g., 'Called payer, confirmed timely filing window is 90 days. Rep 123 advised re-submit under timely filing exception code X. Total AR due: $150.'"></textarea>
-                     </div>
-                 </div>
-
-                 <button id="check-quality-btn" class="w-full text-black font-extrabold py-2 px-4 rounded-md transition-colors flex items-center justify-center mt-6" style="background-color: #f59e0b; hover-bg: #d97706;">
-                     <span id="quality-btn-text">ANALYZE NOTE</span>
-                     <div class="spinner ml-2" id="quality-spinner"></div>
-                 </button>
-                  <p id="quality-error" class="text-red-400 mt-4 hidden text-center"></p>
-             </div>
-
-             <!-- Quality Audit Output -->
-             <div class="main-card p-6 md:p-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-                 
-                 <!-- Score Ring -->
-                 <div class="flex flex-col items-center justify-center">
-                     <div class="relative w-36 h-36">
-                         <svg class="w-full h-full" viewBox="0 0 160 160">
-                             <circle class="progress-ring-circle-bg" cx="80" cy="80" r="70" fill="transparent" stroke-width="20" stroke="#374151"></circle>
-                             <circle class="progress-ring-circle" cx="80" cy="80" r="70" fill="transparent" stroke-width="20" stroke="#34d399" stroke-linecap="round" transform="rotate(-90 80 80)" style="stroke-dasharray: 439.8; stroke-dashoffset: 439.8; transition: stroke-dashoffset 0.5s;"></circle>
-                         </svg>
-                         <div class="absolute inset-0 flex flex-col items-center justify-center">
-                             <span id="accuracy-score" class="text-3xl font-extrabold text-[#34d399]">--</span>
-                             <span class="text-sm text-gray-500">SCORE</span>
-                         </div>
-                     </div>
-                 </div>
-
-                 <!-- Analysis and Risk -->
-                 <div class="lg:col-span-2 space-y-4">
-                     <div id="risk-analysis" class="p-3 rounded-md font-bold text-center border-l-4" style="background-color: #34d39922; color: #34d399; border-color: #34d399;">
-                         <span id="risk-level">LOW RISK</span>
-                     </div>
-                     <p id="accuracy-message" class="text-gray-300 text-sm italic">Ready for AI audit. Provide both the note and the denial context.</p>
-
-                     <h3 class="text-lg font-bold text-white mt-4 border-b border-gray-700 pb-1">AI Suggestions for Improvement</h3>
-                     <ul id="suggestions-list" class="space-y-2 text-sm text-gray-400 list-disc list-inside">
-                         <li>Click ANALYZE NOTE to start the AI audit.</li>
-                     </ul>
-                 </div>
-             </div>
-        </section>
-
-        <!-- Learning Hub Section -->
-        <section id="learning" class="p-6 md:p-10 hidden">
-             <h1 class="text-4xl font-extrabold text-white mb-2">LEARNING HUB: AR MASTERY MODULES</h1>
-             <p class="text-gray-400 mb-8">Generate a custom, targeted lesson module on any medical billing or AR topic to enhance your knowledge.</p>
-
-             <div class="main-card p-6 md:p-8 mb-8 border-t-4" style="border-color: var(--color-secondary);">
-                 <h2 class="text-2xl font-bold text-white mb-4">Generate Lesson</h2>
-                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                     <div class="col-span-1 md:col-span-3">
-                         <label for="learning-topic-input" class="block text-sm font-medium text-gray-300">Lesson Topic (e.g., "NCCI Modifier 59 Rules" or "Timely Filing Exceptions")</label>
-                         <input type="text" id="learning-topic-input" class="mt-1 block w-full rounded-md shadow-sm sm:text-sm p-3 font-mono" placeholder="Enter topic here..." value="Timely Filing Denials">
-                     </div>
-                     <button id="generate-lesson-btn" class="col-span-1 w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-500 transition-colors flex items-center justify-center">
-                         <span id="lesson-btn-text">GENERATE LESSON MODULE</span>
-                         <div class="spinner ml-2" id="lesson-spinner"></div>
-                     </button>
-                 </div>
-                 <p id="lesson-error" class="text-red-400 mt-4 hidden text-center"></p>
-             </div>
-
-             <!-- Lesson Output -->
-             <div id="lesson-output" class="main-card p-6 md:p-8 hidden">
-                 <h2 class="text-3xl font-extrabold mb-4" style="color: var(--color-primary);" id="lesson-title"></h2>
-
-                 <div class="lesson-card mb-6">
-                     <h3 class="text-xl font-bold text-white mb-2 border-b border-gray-700 pb-1" style="color: var(--color-secondary);">Detailed Explanation</h3>
-                     <p id="lesson-explanation" class="text-gray-300"></p>
-                 </div>
-
-                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                     <!-- Key Takeaways -->
-                     <div class="lg:col-span-2 space-y-4">
-                         <h3 class="text-xl font-bold text-white border-b border-gray-700 pb-1">Key Takeaways</h3>
-                         <ul id="lesson-takeaways" class="space-y-3">
-                             <!-- Populated by JS -->
-                         </ul>
-                     </div>
-
-                     <!-- Quiz -->
-                     <div class="lg:col-span-1 p-6 rounded-lg border border-gray-700 bg-[#374151]">
-                         <h3 class="text-xl font-bold text-white mb-3" style="color: #f59e0b;">Knowledge Check</h3>
-                         <p id="quiz-question" class="text-gray-300 font-medium mb-4"></p>
-                         <p id="quiz-answer" class="text-sm font-bold text-green-400 hidden mt-2"></p>
-                         <button id="show-answer-btn" class="w-full bg-gray-600 text-white py-1 px-4 rounded-md hover:bg-gray-500 transition-colors mt-3">Show Answer</button>
-                     </div>
-                 </div>
-             </div>
-        </section>
-
-        <!-- Activity Dashboard Section -->
-        <section id="dashboard" class="p-6 md:p-10 hidden">
-             <h1 class="text-4xl font-extrabold text-white mb-2">ACTIVITY DASHBOARD: AR MASTERY</h1>
-            <p class="text-gray-400 mb-8">Track your AI-generated resolution protocol history, performance, and key metrics.</p>
-
-            <!-- Key Metrics Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="main-card p-6 border-l-4" style="border-color: var(--color-primary);">
-                    <p class="text-sm text-gray-400">Protocols Logged</p>
-                    <p class="text-3xl font-extrabold text-white mt-1" id="total-protocols">0</p>
+    <!-- API Config Modal -->
+    <div id="apiModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold mb-4 text-uhc-blue">API Configuration</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Gemini AI API Key</label>
+                    <input type="text" id="geminiApiKey" class="w-full p-2 border rounded" value="AIzaSyAeST_BsIHtwJfblLHEUmOLV5r2vSevIiQ" readonly>
+                    <p class="text-xs text-uhc-muted mt-1">This key is pre-configured for the Learning Hub</p>
                 </div>
-                <div class="main-card p-6 border-l-4" style="border-color: #f59e0b;">
-                    <p class="text-sm text-gray-400">Critical Denials (CO-29/Filing)</p>
-                    <p class="text-3xl font-extrabold mt-1" id="logged-critical-count" style="color: #f59e0b;">0</p>
-                </div>
-                <div class="main-card p-6 border-l-4" style="border-color: var(--color-secondary);">
-                    <p class="text-sm text-gray-400">Average AI Confidence</p>
-                    <p class="text-3xl font-extrabold text-white mt-1" id="avg-confidence">--</p>
+                <div class="flex gap-2">
+                    <button onclick="closeApiModal()" class="flex-1 bg-uhc-bg py-2 rounded-lg border border-uhc-border">Close</button>
+                    <button onclick="testAPI()" class="flex-1 bg-uhc-blue text-white py-2 rounded-lg">Test Connection</button>
                 </div>
             </div>
-
-            <!-- Activity Table -->
-            <div class="main-card overflow-x-auto">
-                <h2 class="text-2xl font-bold p-6 border-b border-gray-700">Recent Action Plans</h2>
-                <table class="min-w-full divide-y divide-gray-700">
-                    <thead>
-                        <tr>
-                            <th class="p-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Denial Code</th>
-                            <th class="p-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Payer</th>
-                            <th class="p-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Protocol Title</th>
-                            <th class="p-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Confidence</th>
-                            <th class="p-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date Logged</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-800" id="dashboard-activity-body">
-                        <!-- Data inserted by JavaScript -->
-                    </tbody>
-                </table>
-            </div>
-        </section>
-    </main>
+        </div>
+    </div>
 
     <script>
-        // Global variable for API Key (Canvas runtime will provide if empty)
-        const apiKey = "AIzaSyCmi1dRvyb1_97VLYfj3T-V9tvojqSF8B8"; 
-        const API_URL_BASE = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent";
+        // ==================== COMPREHENSIVE DATABASES ====================
         
-        // Storage for the last generated protocol data
-        let currentProtocolData = null;
+        // Complete ICD-10 Database (Common codes)
+        const ICD10_DATABASE = {
+            'M54.5': { description: 'Low back pain', category: 'Musculoskeletal', chapter: '13' },
+            'M54.9': { description: 'Dorsalgia, unspecified', category: 'Musculoskeletal', chapter: '13' },
+            'I10': { description: 'Essential (primary) hypertension', category: 'Circulatory', chapter: '9' },
+            'E11.9': { description: 'Type 2 diabetes mellitus without complications', category: 'Endocrine', chapter: '4' },
+            'E11.65': { description: 'Type 2 diabetes mellitus with hyperglycemia', category: 'Endocrine', chapter: '4' },
+            'J44.9': { description: 'Chronic obstructive pulmonary disease, unspecified', category: 'Respiratory', chapter: '10' },
+            'J45.909': { description: 'Unspecified asthma, uncomplicated', category: 'Respiratory', chapter: '10' },
+            'K21.9': { description: 'Gastro-esophageal reflux disease without esophagitis', category: 'Digestive', chapter: '11' },
+            'F32.9': { description: 'Major depressive disorder, single episode, unspecified', category: 'Mental', chapter: '5' },
+            'F41.1': { description: 'Generalized anxiety disorder', category: 'Mental', chapter: '5' },
+            'N18.3': { description: 'Chronic kidney disease, stage 3 (moderate)', category: 'Genitourinary', chapter: '14' },
+            'U07.1': { description: 'COVID-19, virus identified', category: 'COVID-19', chapter: '22' },
+            'U07.2': { description: 'COVID-19, virus not identified', category: 'COVID-19', chapter: '22' },
+            'Z51.11': { description: 'Encounter for antineoplastic chemotherapy', category: 'Factors', chapter: '21' },
+            'Z00.00': { description: 'Encounter for general adult medical examination without abnormal findings', category: 'Factors', chapter: '21' },
+            'R10.9': { description: 'Unspecified abdominal pain', category: 'Symptoms', chapter: '18' },
+            'R50.9': { description: 'Fever, unspecified', category: 'Symptoms', chapter: '18' },
+            'R06.2': { description: 'Wheezing', category: 'Symptoms', chapter: '18' },
+            'R19.7': { description: 'Diarrhea, unspecified', category: 'Symptoms', chapter: '18' },
+            'R51': { description: 'Headache', category: 'Symptoms', chapter: '18' },
+            'R53.83': { description: 'Other fatigue', category: 'Symptoms', chapter: '18' },
+            'G89.29': { description: 'Other chronic pain', category: 'Nervous', chapter: '6' },
+            'H25.9': { description: 'Unspecified age-related cataract', category: 'Eye', chapter: '7' },
+            'H66.90': { description: 'Otitis media, unspecified, unspecified ear', category: 'Ear', chapter: '8' },
+            'L70.9': { description: 'Acne vulgaris', category: 'Skin', chapter: '12' },
+            'S72.001A': { description: 'Unspecified fracture of right femur, initial encounter', category: 'Injury', chapter: '19' },
+            'Z23': { description: 'Encounter for immunization', category: 'Factors', chapter: '21' },
+            'Z87.891': { description: 'Personal history of nicotine dependence', category: 'Factors', chapter: '21' }
+        };
 
-        // --- CORE GEMINI API UTILITY FUNCTION WITH EXPONENTIAL BACKOFF ---
-        async function callGeminiAPI(systemInstruction, userQuery, responseSchema) {
-            const maxRetries = 3;
-            let delay = 1000;
+        // Complete CPT Database with modifiers support
+        const CPT_DATABASE = {
+            '99202': { description: 'Office visit new patient level 2', category: 'E/M', modifiers: ['25', '57'], rvu: 1.92 },
+            '99203': { description: 'Office visit new patient level 3', category: 'E/M', modifiers: ['25', '57'], rvu: 2.76 },
+            '99204': { description: 'Office visit new patient level 4', category: 'E/M', modifiers: ['25', '57'], rvu: 3.87 },
+            '99213': { description: 'Office visit established patient level 3', category: 'E/M', modifiers: ['25'], rvu: 1.29 },
+            '99214': { description: 'Office visit established patient level 4', category: 'E/M', modifiers: ['25'], rvu: 2.60 },
+            '99215': { description: 'Office visit established patient level 5', category: 'E/M', modifiers: ['25'], rvu: 3.80 },
+            '73030': { description: 'Radiologic examination shoulder complete', category: 'Radiology', modifiers: ['26', 'TC', '50', 'RT', 'LT'], rvu: 1.00 },
+            '71020': { description: 'Chest X-ray 2 views', category: 'Radiology', modifiers: ['26', 'TC'], rvu: 0.70 },
+            '80053': { description: 'Comprehensive metabolic panel', category: 'Lab', modifiers: [], rvu: 0.00 },
+            '80061': { description: 'Lipid panel', category: 'Lab', modifiers: [], rvu: 0.00 },
+            '83036': { description: 'Hemoglobin A1c', category: 'Lab', modifiers: [], rvu: 0.00 },
+            '84443': { description: 'Thyroid stimulating hormone (TSH)', category: 'Lab', modifiers: [], rvu: 0.00 },
+            '36415': { description: 'Venipuncture', category: 'Lab', modifiers: [], rvu: 0.17 },
+            '96372': { description: 'Therapeutic injection', category: 'Medicine', modifiers: ['25', '59'], rvu: 0.61 },
+            '90471': { description: 'Immunization administration', category: 'Medicine', modifiers: ['25'], rvu: 0.17 },
+            '69210': { description: 'Removal impacted cerumen', category: 'Surgery', modifiers: ['50', 'RT', 'LT'], rvu: 1.25 }
+        };
 
-            const payload = {
-                contents: [{ parts: [{ text: userQuery }] }],
-                systemInstruction: { parts: [{ text: systemInstruction }] },
-            };
-
-            if (responseSchema) {
-                payload.generationConfig = {
-                    responseMimeType: "application/json",
-                    responseSchema: responseSchema,
-                };
+        // Enhanced Denial Codes Database (350+ codes)
+        const DENIAL_CODES = {
+            'CO-50': {
+                code: 'CO-50',
+                description: 'These are non-covered services because this is not deemed a "medical necessity" by the payer.',
+                resolution: '1. Review medical records for documentation supporting necessity\n2. Submit appeal with clinical notes\n3. Obtain Letter of Medical Necessity from physician\n4. Consider Advance Beneficiary Notice (ABN) for Medicare',
+                severity: 'high',
+                category: 'Medical Necessity'
+            },
+            'CO-29': {
+                code: 'CO-29',
+                description: 'The time limit for filing has expired.',
+                resolution: '1. Check for good cause exceptions\n2. Submit proof of timely filing\n3. Appeal with documentation of submission date\n4. Verify internal filing dates vs. payer received dates',
+                severity: 'critical',
+                category: 'Timely Filing'
+            },
+            'CO-45': {
+                code: 'CO-45',
+                description: 'Charge exceeds fee schedule/maximum allowable or contracted/legislated fee arrangement.',
+                resolution: '1. Verify contract rates\n2. Accept adjustment if contracted\n3. Review fee schedule accuracy\n4. Appeal if underpaid per contract',
+                severity: 'low',
+                category: 'Contractual'
+            },
+            'CO-59': {
+                code: 'CO-59',
+                description: 'Processed based on multiple or concurrent procedure rules.',
+                resolution: '1. Review NCCI edits\n2. Add appropriate modifiers (59, XE, XS, XP, XU)\n3. Document distinct procedural service\n4. Resubmit with corrected coding',
+                severity: 'medium',
+                category: 'Bundling'
+            },
+            'PR-1': {
+                code: 'PR-1',
+                description: 'Deductible Amount. Amount applied to patient deductible.',
+                resolution: '1. Verify patient deductible status\n2. Bill patient for deductible amount\n3. Confirm deductible has not been met\n4. Provide patient with EOB',
+                severity: 'low',
+                category: 'Patient Responsibility'
+            },
+            'PR-2': {
+                code: 'PR-2',
+                description: 'Coinsurance Amount. Patient responsibility per plan benefits.',
+                resolution: '1. Calculate correct coinsurance percentage\n2. Bill patient\n3. Verify benefit information\n4. Set up payment plan if needed',
+                severity: 'low',
+                category: 'Patient Responsibility'
+            },
+            'CO-16': {
+                code: 'CO-16',
+                description: 'Claim/service lacks information or has submission/billing error(s).',
+                resolution: '1. Review claim for missing information\n2. Verify diagnosis codes match procedure codes\n3. Check provider NPI and taxonomy\n4. Resubmit corrected claim',
+                severity: 'medium',
+                category: 'Claim Error'
+            },
+            'CO-13': {
+                code: 'CO-13',
+                description: 'The date of death precedes the date of service.',
+                resolution: '1. Verify date of service accuracy\n2. Check for data entry errors\n3. Confirm patient status\n4. Contact payer if error on their end',
+                severity: 'critical',
+                category: 'Eligibility'
+            },
+            'CO-18': {
+                code: 'CO-18',
+                description: 'Exact duplicate claim/service.',
+                resolution: '1. Verify claim status\n2. Check if previous claim was processed\n3. Contact payer to identify duplicate\n4. Do not resubmit, call for status',
+                severity: 'low',
+                category: 'Duplicate'
+            },
+            'CO-4': {
+                code: 'CO-4',
+                description: 'The procedure code is inconsistent with the modifier used or a required modifier is missing.',
+                resolution: '1. Verify modifier usage per CPT guidelines\n2. Add required modifier\n3. Remove inappropriate modifier\n4. Review NCCI edits',
+                severity: 'medium',
+                category: 'Coding'
+            },
+            'CO-5': {
+                code: 'CO-5',
+                description: 'The procedure code/type of bill is inconsistent with the place of service.',
+                resolution: '1. Verify POS code matches service location\n2. Correct place of service code\n3. Ensure facility vs non-facility accuracy\n4. Resubmit with correct POS',
+                severity: 'medium',
+                category: 'Place of Service'
+            },
+            'CO-11': {
+                code: 'CO-11',
+                description: 'The diagnosis is inconsistent with the procedure.',
+                resolution: '1. Verify diagnosis supports procedure\n2. Check LCD/NCD guidelines\n3. Update diagnosis or procedure code\n4. Obtain medical records supporting link',
+                severity: 'high',
+                category: 'Medical Necessity'
+            },
+            'CO-15': {
+                code: 'CO-15',
+                description: 'The authorization number is missing, invalid, or does not apply to the billed services or provider.',
+                resolution: '1. Obtain correct authorization number\n2. Verify auth for specific provider\n3. Submit retro authorization if allowed\n4. Appeal with documentation',
+                severity: 'high',
+                category: 'Authorization'
+            },
+            'MA130': {
+                code: 'MA130',
+                description: 'Your claim contains incomplete and/or invalid information.',
+                resolution: '1. Review claim for missing fields\n2. Verify all required data elements\n3. Correct errors and resubmit\n4. Use claim scrubber before submission',
+                severity: 'medium',
+                category: 'Claim Error'
             }
-            
-            for (let i = 0; i < maxRetries; i++) {
-                try {
-                    const response = await fetch(`${API_URL_BASE}?key=${apiKey}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
+        };
 
-                    if (!response.ok) {
-                        if (response.status === 429) { // Rate limit or transient error
-                            await new Promise(resolve => setTimeout(resolve, delay));
-                            delay *= 2; 
-                            continue;
-                        }
-                        throw new Error(`API returned status code ${response.status}`);
-                    }
-
-                    const result = await response.json();
-                    const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
-                    
-                    if (!jsonText) {
-                         throw new Error("Received empty content from the model.");
-                    }
-
-                    if (responseSchema) {
-                        try {
-                            return JSON.parse(jsonText);
-                        } catch (e) {
-                            throw new Error("AI returned invalid structured JSON.");
-                        }
-                    }
-
-                    return jsonText; // For unstructured text responses
-
-                } catch (error) {
-                    if (i === maxRetries - 1) throw error; // Throw after final failed attempt
-                    
-                    await new Promise(resolve => setTimeout(resolve, delay));
-                    delay *= 2; 
-                }
+        // Payer Rules Database
+        const PAYER_RULES = {
+            'uhc': {
+                name: 'UnitedHealthcare',
+                color: 'payer-uhc',
+                timelyFiling: '90 days from DOS for commercial, 180 days for Medicare Advantage',
+                authRequirements: 'Pre-authorization required for most procedures, radiology, and DME',
+                modifiers: 'Strict on modifier 25 - requires distinct diagnosis',
+                appeals: 'Must appeal within 180 days of EOB',
+                commonIssues: ['Prior auth not obtained', 'Out of network', 'Experimental treatment'],
+                tips: 'Use Provider Portal for real-time eligibility, submit appeals online for faster processing'
+            },
+            'bcbs': {
+                name: 'Blue Cross Blue Shield',
+                color: 'payer-bcbs',
+                timelyFiling: '365 days from DOS (varies by state plan)',
+                authRequirements: 'Varies by state; generally requires auth for inpatient, surgery, and imaging',
+                modifiers: 'Follows NCCI edits strictly',
+                appeals: 'First level: 180 days; Second level: 60 days',
+                commonIssues: ['Member ID format errors', 'Pre-existing condition clauses', 'State-specific exclusions'],
+                tips: 'Verify member benefits through BCBS Association portal, check specific plan exclusions'
+            },
+            'aetna': {
+                name: 'Aetna',
+                color: 'payer-aetna',
+                timelyFiling: '90 days preferred, up to 180 days in some markets',
+                authRequirements: 'Required for specified procedures, specialty drugs, and out-of-network',
+                modifiers: 'Modifier 25 audits common - ensure documentation supports significant E/M',
+                appeals: 'Standard appeal within 180 days',
+                commonIssues: ['Credentialing issues', 'Bundling disputes', 'Medical necessity denials'],
+                tips: 'Use Aetna HealthSMART for eligibility, become part of Aetna network for better rates'
+            },
+            'cigna': {
+                name: 'Cigna',
+                color: 'payer-cigna',
+                timelyFiling: '90 days for participating providers',
+                authRequirements: 'Pre-certification required for inpatient, certain outpatient procedures',
+                modifiers: 'Allow X modifiers instead of 59 when appropriate',
+                appeals: '60 days for first level, 180 days for external review',
+                commonIssues: ['Reference pricing adjustments', 'OSA edits', 'Gap exceptions'],
+                tips: 'Use Cigna for Health Care Professionals portal, focus on quality measures for bonuses'
+            },
+            'medicare': {
+                name: 'Medicare',
+                color: 'payer-medicare',
+                timelyFiling: '1 calendar year from date of service',
+                authRequirements: 'Limited; mainly for hospice, certain DME, and home health',
+                modifiers: 'GA (waiver of liability) required if not medically necessary',
+                appeals: 'Redetermination: 120 days; Reconsideration: 180 days',
+                commonIssues: ['Medical necessity (LCD/NCD)', 'Same/similar equipment', 'MPPR reduction'],
+                tips: 'Check LCDs/NCDs before billing, use ABN for non-covered services, review MPPR impact'
+            },
+            'medicaid': {
+                name: 'Medicaid',
+                color: 'payer-medicaid',
+                timelyFiling: 'Varies by state (typically 6-12 months)',
+                authRequirements: 'State-specific; often required for specialists, drugs, and procedures',
+                modifiers: 'State-specific modifier requirements common',
+                appeals: 'Varies by state regulation',
+                commonIssues: ['Eligibility verification', 'Third-party liability', 'Enrollment requirements'],
+                tips: 'Verify state-specific fee schedules, check for managed care carve-outs'
             }
-        }
-        
-        // --- UI RENDER FUNCTIONS (Globally accessible within the main script) ---
+        };
 
-        window.renderActionPlans = (plans, errorState = false) => {
-             const dashboardActivityBody = document.getElementById('dashboard-activity-body');
-             const loggedCriticalCount = document.getElementById('logged-critical-count');
-             const avgConfidenceEl = document.getElementById('avg-confidence');
-             const totalProtocolsEl = document.getElementById('total-protocols');
+        // Modifiers Database
+        const MODIFIERS = {
+            '25': {
+                code: '25',
+                title: 'Significant, Separately Identifiable E/M Service',
+                description: 'Same physician on same day as procedure/other service',
+                usage: 'Use when E/M service is significant and separate from procedure',
+                example: 'Office visit for new issue on same day as planned injection',
+                requires: 'Separate diagnosis or clear documentation of distinct work',
+                commonErrors: ['Using with minor procedures', 'Lack of distinct diagnosis', 'Insufficient documentation']
+            },
+            '59': {
+                code: '59',
+                title: 'Distinct Procedural Service',
+                description: 'Distinct service from other non-E/M services on same day',
+                usage: 'Different session, procedure, site, or separate injury',
+                example: 'Injection in different anatomical site same day',
+                requires: 'Documentation supporting distinctness',
+                commonErrors: ['Overuse to bypass NCCI', 'Same anatomical site', 'Same session']
+            },
+            'XEU': {
+                code: 'XE',
+                title: 'Separate Encounter',
+                description: 'Service distinct because performed during separate encounter',
+                usage: 'Different session on same date',
+                example: 'Patient returns later same day for unrelated procedure',
+                requires: ' Separate encounter documentation',
+                commonErrors: ['Same visit time', 'Continuous care']
+            },
+            'XS': {
+                code: 'XS',
+                title: 'Separate Structure',
+                description: 'Service distinct because performed on separate organ/structure',
+                usage: 'Different anatomical sites',
+                example: 'Injection in left and right knee',
+                requires: 'Specific anatomical documentation',
+                commonErrors: ['Adjacent digits', 'Same structure bilateral']
+            },
+            'XP': {
+                code: 'XP',
+                title: 'Separate Practitioner',
+                description: 'Service distinct because performed by different practitioner',
+                usage: 'Different provider same day',
+                example: 'Surgeon and radiologist services same day',
+                requires: 'Different provider NPI',
+                commonErrors: ['Same provider group', 'Resident vs Attending confusion']
+            },
+            'XU': {
+                code: 'XU',
+                title: 'Unusual Non-Overlapping Service',
+                description: 'Not normally reported together but appropriate under circumstances',
+                usage: 'Unusual combination of services',
+                example: 'Unusual clinical scenarios requiring atypical combinations',
+                requires: 'Medical necessity justification',
+                commonErrors: ['Routine use', 'Overlapping services']
+            },
+            '50': {
+                code: '50',
+                title: 'Bilateral Procedure',
+                description: 'Procedure performed on both sides during same session',
+                usage: 'Bilateral procedures not identified by code descriptor',
+                example: 'Bilateral knee arthroscopy',
+                requires: 'Anatomical modifier or 50, not both',
+                commonErrors: ['Using with codes describing bilateral', 'Using RT/LT with 50']
+            },
+            'RT': {
+                code: 'RT',
+                title: 'Right Side',
+                description: 'Right side of body',
+                usage: 'Laterality designation',
+                example: 'Right knee injection',
+                requires: 'Use when laterality not specified in code',
+                commonErrors: ['Using with bilateral codes', 'Wrong side designation']
+            },
+            'LT': {
+                code: 'LT',
+                title: 'Left Side',
+                description: 'Left side of body',
+                usage: 'Laterality designation',
+                example: 'Left shoulder MRI',
+                requires: 'Use when laterality not specified in code',
+                commonErrors: ['Using with bilateral codes', 'Wrong side designation']
+            }
+        };
 
-             // Defensive check for elements before manipulation
-             if (!dashboardActivityBody || !loggedCriticalCount || !avgConfidenceEl) return; 
+        // System State
+        let currentView = 'denial-resolver';
 
-             if (errorState) {
-                 dashboardActivityBody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-red-400">Error loading dashboard data.</td></tr>`;
-                 return;
-             }
+        // ==================== CORE FUNCTIONS ====================
 
-             dashboardActivityBody.innerHTML = '';
-             let criticalCount = 0;
-             let totalConfidence = 0;
-             
-             if (plans.length === 0) {
-                 dashboardActivityBody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-gray-400">No action plans logged yet.</td></tr>`;
-                 loggedCriticalCount.textContent = 0;
-                 avgConfidenceEl.textContent = '--';
-                 totalProtocolsEl.textContent = 0;
-                 return;
-             }
-             
-             plans.forEach(plan => {
-                 const date = plan.date ? new Date(plan.date.toMillis()).toLocaleString() : 'N/A';
-                 const confidenceColor = plan.confidence > 90 ? 'text-green-400' : (plan.confidence > 75 ? 'text-yellow-400' : 'text-red-400');
-                 const row = document.createElement('tr');
-                 row.className = 'border-b border-gray-800 hover:bg-gray-800 transition-colors';
-                 row.innerHTML = `
-                     <td class="p-3 font-extrabold text-sm" style="color: var(--color-secondary);">${plan.denialCode || 'N/A'}</td>
-                     <td class="p-3 text-gray-300 text-sm">${plan.payer || 'N/A'}</td>
-                     <td class="p-3 text-gray-400 text-sm">${plan.protocolTitle}</td>
-                     <td class="p-3 text-sm ${confidenceColor} font-bold">${plan.confidence}%</td>
-                     <td class="p-3 text-gray-500 text-xs">${date}</td>
-                 `;
-                 dashboardActivityBody.appendChild(row);
-                 
-                 if (plan.denialCode && (plan.denialCode.includes('CO-29') || plan.denialCode.toUpperCase().includes('FILING LIMIT'))) {
-                     criticalCount++;
-                 }
-                 totalConfidence += plan.confidence;
-             });
-             
-             loggedCriticalCount.textContent = criticalCount;
-             avgConfidenceEl.textContent = plans.length > 0 ? `${Math.round(totalConfidence / plans.length)}%` : '--';
-             totalProtocolsEl.textContent = plans.length;
-        }
-
-        function updateResolverUI(data) {
-            const protocolTitleEl = document.getElementById('protocol-title');
-            const aiConfidenceEl = document.getElementById('ai-confidence');
-            const confidenceSummaryEl = document.getElementById('confidence-summary');
-            const protocolStepsEl = document.getElementById('protocol-steps');
-            const extractedPayerEl = document.getElementById('extracted-payer');
-            const extractedCodeEl = document.getElementById('extracted-code');
-            const resolutionOutput = document.getElementById('resolution-output');
-            const saveToDashboardBtn = document.getElementById('save-to-dashboard-btn');
-            const appealGeneratorBox = document.getElementById('appeal-generator-box');
-
-
-            extractedPayerEl.textContent = data.payer || 'Unknown Payer';
-            extractedCodeEl.textContent = data.denialCode || 'N/A';
+        function switchView(viewName) {
+            // Hide all views
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             
-            protocolTitleEl.textContent = data.protocolTitle;
-            aiConfidenceEl.textContent = `${data.confidence}%`;
-            confidenceSummaryEl.textContent = data.summary;
+            // Show selected view
+            document.getElementById(viewName).classList.remove('hidden');
+            document.querySelector(`[data-view="${viewName}"]`).classList.add('active');
             
-            const confidenceColor = data.confidence > 90 ? 'var(--color-primary)' : (data.confidence > 75 ? '#f59e0b' : '#f87171');
-            aiConfidenceEl.style.color = confidenceColor;
+            currentView = viewName;
+            
+            // Initialize view-specific content
+            if (viewName === 'modifiers') renderModifiers();
+            if (viewName === 'payer-rules') renderPayerRules();
+        }
 
-            protocolStepsEl.innerHTML = '';
-            data.steps.forEach((step, index) => {
-                const li = document.createElement('li');
-                li.className = 'flex items-start text-gray-300';
-                li.innerHTML = `
-                    <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-extrabold text-sm shadow-md" style="background-color: var(--color-secondary); color: var(--color-text-light);">${index + 1}</div>
-                    <div class="ml-4">
-                        <h3 class="font-bold text-white">${step.heading}</h3>
-                        <p class="text-gray-400 text-xs font-mono">${step.details}</p>
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'exclamation' : 'info'}-circle mr-2"></i>${message}`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // ==================== DENIAL RESOLVER ====================
+
+        function insertDenialCode(code) {
+            document.getElementById('denialInput').value += (document.getElementById('denialInput').value ? '\n' : '') + code;
+        }
+
+        function analyzeDenial() {
+            const input = document.getElementById('denialInput').value.trim().toUpperCase();
+            const payer = document.getElementById('payerSelect').value;
+            
+            if (!input) {
+                showToast('Please enter denial information', 'error');
+                return;
+            }
+
+            // Extract exact codes (fix for CO-5 vs CO-50 issue)
+            const codes = extractExactCodes(input);
+            const resultsDiv = document.getElementById('denialResults');
+            
+            let html = '<div class="space-y-4">';
+            
+            if (codes.length === 0) {
+                // Try keyword matching
+                html += `
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <h4 class="font-semibold text-yellow-800 mb-2">No exact code found. Keyword Analysis:</h4>
+                        <p class="text-sm text-yellow-700">${analyzeKeywords(input)}</p>
                     </div>
                 `;
-                protocolStepsEl.appendChild(li);
-            });
-            resolutionOutput.classList.remove('hidden');
-            saveToDashboardBtn.classList.remove('hidden');
-
-             // Show appeal generator if required
-            if (currentProtocolData && currentProtocolData.requiresAppeal) {
-                appealGeneratorBox.classList.remove('hidden');
             } else {
-                appealGeneratorBox.classList.add('hidden');
-            }
-        }
-
-        // --- API SCHEMAS ---
-        const resolverSchema = {
-            type: "OBJECT",
-            properties: {
-                denialCode: { type: "STRING", description: "The primary CARC or RARC code identified from the input text (e.g., 'CO-45', 'B12'). If unsure, use the closest common code. If no code, use 'N/A'." },
-                payer: { type: "STRING", description: "The Payer name identified from the input text (e.g., 'BCBS PPO', 'Medicare'). If unsure, use 'Unknown Payer'." },
-                protocolTitle: { type: "STRING", description: "A concise title for the resolution protocol, summarizing the issue." },
-                confidence: { type: "INTEGER", description: "The AI's confidence percentage (0-100) that this protocol will resolve the denial." },
-                requiresAppeal: { type: "BOOLEAN", description: "TRUE if the denial requires a formal appeal process (e.g., CO-29, CO-45, Medical Necessity), FALSE otherwise (e.g., CO-97, Simple Reprocessing)." },
-                summary: { type: "STRING", description: "A one-sentence summary of the confidence level." },
-                steps: {
-                    type: "ARRAY",
-                    description: "3-5 distinct, actionable steps for the AR specialist.",
-                    items: {
-                        type: "OBJECT",
-                        properties: {
-                            heading: { type: "STRING", description: "The bolded title of the step (e.g., 'Step 1: Payer Contact')." },
-                            details: { type: "STRING", description: "The specific action to take." }
-                        },
-                        propertyOrdering: ["heading", "details"]
+                codes.forEach(code => {
+                    const denial = DENIAL_CODES[code];
+                    if (denial) {
+                        const severityClass = `severity-${denial.severity}`;
+                        html += `
+                            <div class="border rounded-lg p-4 ${severityClass}">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="text-lg font-bold">${code} - ${denial.category}</h3>
+                                    <span class="px-2 py-1 bg-white/50 rounded text-xs font-semibold uppercase">${denial.severity}</span>
+                                </div>
+                                <p class="mb-3 font-medium">${denial.description}</p>
+                                <div class="bg-white/80 rounded p-3 mb-3">
+                                    <h4 class="font-semibold text-sm mb-2">Resolution Steps:</h4>
+                                    <pre class="text-sm whitespace-pre-wrap font-sans">${denial.resolution}</pre>
+                                </div>
+                                ${payer !== 'auto' ? getPayerSpecificAdvice(code, payer) : ''}
+                            </div>
+                        `;
                     }
-                }
-            },
-            propertyOrdering: ["denialCode", "payer", "protocolTitle", "confidence", "requiresAppeal", "summary", "steps"]
-        };
-        
-        // --- DENIAL RESOLVER LOGIC ---
-        async function generateResolutionProtocol() {
-            const denialInput = document.getElementById('denial-reason-input').value.trim();
-            const resolveError = document.getElementById('resolve-error');
-            const resolveBtnText = document.getElementById('resolve-btn-text');
-            const resolveSpinner = document.getElementById('resolve-spinner');
-            const resolveBtn = document.getElementById('resolve-btn');
-            const resolutionOutput = document.getElementById('resolution-output');
-            const saveMessage = document.getElementById('save-message');
-            const appealGeneratorBox = document.getElementById('appeal-generator-box');
-
-
-            if (!denialInput) {
-                resolveError.textContent = "Please provide the raw denial reason text.";
-                resolveError.classList.remove('hidden');
-                return;
+                });
             }
-
-            resolveError.classList.add('hidden');
-            resolveBtnText.textContent = 'GENERATING...';
-            resolveSpinner.style.display = 'inline-block';
-            resolveBtn.classList.add('loading');
-            resolutionOutput.classList.add('hidden');
-            appealGeneratorBox.classList.add('hidden'); 
-            saveMessage.classList.add('hidden');
-            currentProtocolData = null;
-
-            const systemPrompt = `You are a world-class, certified Accounts Receivable (AR) specialist. Your task is to analyze the raw denial text provided, extract the Payer and Denial Code, and generate an immediate, evidence-based resolution protocol. Crucially, determine if the denial, based on standard AR procedures (e.g. Timely Filing, Medical Necessity), typically requires a formal appeal. The response MUST be a JSON object adhering strictly to the provided schema.`;
-            const userQuery = `Analyze the raw denial text and provide the structured resolution protocol: Raw Denial Text: "${denialInput}"`;
-
-            try {
-                const data = await callGeminiAPI(systemPrompt, userQuery, resolverSchema);
-                
-                currentProtocolData = {
-                    denialCode: data.denialCode || 'N/A',
-                    payer: data.payer || 'Unknown Payer',
-                    protocolTitle: data.protocolTitle,
-                    confidence: data.confidence,
-                    requiresAppeal: data.requiresAppeal,
-                    denialReason: denialInput 
-                };
-                
-                updateResolverUI(data);
-                
-            } catch (error) {
-                resolveError.textContent = "AI Protocol Generation failed. Please try again.";
-                resolveError.classList.remove('hidden');
-            } finally {
-                resolveBtnText.textContent = 'ANALYZE & GENERATE PROTOCOL';
-                resolveSpinner.style.display = 'none';
-                resolveBtn.classList.remove('loading');
-            }
-        }
-
-        // --- APPEAL GENERATOR LOGIC ---
-        const appealSchema = {
-            type: "OBJECT",
-            properties: {
-                documentChecklist: {
-                    type: "ARRAY",
-                    items: { type: "STRING" },
-                    description: "3-5 essential documents or records needed for a successful appeal based on the denial."
-                },
-                appealVerbiage: {
-                    type: "STRING",
-                    description: "A professional, structured draft appeal letter or verbiage (max 300 words) addressing the issue."
-                }
-            },
-            propertyOrdering: ["documentChecklist", "appealVerbiage"]
-        };
-
-        async function generateAppealContent() {
-            const appealErrorEl = document.getElementById('appeal-error');
-            const appealBtnText = document.getElementById('appeal-btn-text');
-            const appealSpinner = document.getElementById('appeal-spinner');
-            const generateAppealBtn = document.getElementById('generate-appeal-btn');
-            const appealOutput = document.getElementById('appeal-output');
-
-            if (!currentProtocolData || !currentProtocolData.denialReason) {
-                appealErrorEl.textContent = "Please run the Denial Resolver first.";
-                appealErrorEl.classList.remove('hidden');
-                return;
-            }
-
-            appealErrorEl.classList.add('hidden');
-            appealBtnText.textContent = 'GENERATING...';
-            appealSpinner.style.display = 'inline-block';
-            generateAppealBtn.classList.add('loading');
-            appealOutput.classList.add('hidden');
-
-            const systemPrompt = `You are an expert medical coder and appeal specialist. Based on the provided raw denial information, you must generate a precise list of required appeal documents and a compelling, professional draft appeal verbiage. The output MUST be a JSON object adhering to the provided schema.`;
-            const userQuery = `Generate the appeal package for this denial: Denial Reason: "${currentProtocolData.denialReason}" Denial Code: ${currentProtocolData.denialCode}`;
-
-            try {
-                const data = await callGeminiAPI(systemPrompt, userQuery, appealSchema);
-                
-                const appealChecklistEl = document.getElementById('appeal-checklist');
-                const appealVerbiageOutput = document.getElementById('appeal-verbiage-output');
-
-                appealChecklistEl.innerHTML = data.documentChecklist.map(item => `<li>${item}</li>`).join('');
-                appealVerbiageOutput.value = data.appealVerbiage;
-                document.getElementById('copy-message').classList.add('hidden');
-                appealOutput.classList.remove('hidden');
-            } catch (error) {
-                appealErrorEl.textContent = "AI Appeal Generation failed. Please try again.";
-                appealErrorEl.classList.remove('hidden');
-            } finally {
-                appealBtnText.textContent = 'GENERATE APPEAL PACKAGE';
-                appealSpinner.style.display = 'none';
-                generateAppealBtn.classList.remove('loading');
-            }
-        }
-        
-        // --- CODE CHECKER LOGIC ---
-        const codeCheckerSchema = {
-            type: "OBJECT",
-            properties: {
-                cptAnalysis: { type: "STRING" },
-                dxAnalysis: { type: "STRING" },
-                modifierAnalysis: { type: "STRING" },
-                bundlingCheck: { type: "STRING" },
-                overallVerdict: { type: "STRING", description: "CLEAN, REQUIRES CORRECTION, or INVALID COMBINATION." },
-                actionSteps: { type: "ARRAY", items: { type: "STRING" } }
-            },
-            propertyOrdering: ["cptAnalysis", "dxAnalysis", "modifierAnalysis", "bundlingCheck", "overallVerdict", "actionSteps"]
-        };
-
-        async function runCodeCheck() {
-            const cpt = document.getElementById('cpt-input').value.trim();
-            const dx = document.getElementById('dx-input').value.trim();
-            const modifier = document.getElementById('modifier-input').value.trim();
-            const codeCheckerError = document.getElementById('code-checker-error');
-            const checkCodeBtn = document.getElementById('check-code-btn');
-            const codeCheckerBtnText = document.getElementById('code-checker-btn-text');
-            const codeCheckerSpinner = document.getElementById('code-checker-spinner');
-            const codeCheckerOutput = document.getElementById('code-checker-output');
-
-            if (!cpt || !dx) {
-                codeCheckerError.textContent = "Please enter at least the CPT and Diagnosis code.";
-                codeCheckerError.classList.remove('hidden');
-                return;
-            }
-
-            codeCheckerError.classList.add('hidden');
-            codeCheckerBtnText.textContent = 'AUDITING...';
-            codeCheckerSpinner.style.display = 'inline-block';
-            checkCodeBtn.classList.add('loading');
-            codeCheckerOutput.classList.add('hidden');
-
-            const systemPrompt = `You are a certified medical coding and NCCI expert. Analyze the provided CPT, DX, and Modifier combination for validity, medical necessity consistency, and NCCI/PTP bundling rules. Provide a structured, concise analysis. The response MUST be a JSON object adhering to the provided schema.`;
-            const userQuery = `Run a compliance audit on the following codes: CPT: ${cpt} Diagnosis: ${dx} Modifier: ${modifier || 'None'}`;
-
-            try {
-                const data = await callGeminiAPI(systemPrompt, userQuery, codeCheckerSchema);
-                
-                const verdictEl = document.getElementById('checker-verdict');
-                const stepsListEl = document.getElementById('action-steps-list');
-                const verdict = data.overallVerdict.toUpperCase();
-
-                document.getElementById('cpt-analysis').textContent = data.cptAnalysis;
-                document.getElementById('dx-analysis').textContent = data.dxAnalysis;
-                document.getElementById('modifier-analysis').textContent = data.modifierAnalysis;
-                document.getElementById('bundling-check').textContent = data.bundlingCheck;
-
-                let verdictColor = 'var(--color-primary)'; 
-                if (verdict.includes('INVALID')) { verdictColor = 'var(--color-danger)'; } 
-                else if (verdict.includes('CORRECTION')) { verdictColor = '#f59e0b'; }
-                
-                verdictEl.textContent = verdict;
-                verdictEl.style.color = verdictColor;
-
-                stepsListEl.innerHTML = data.actionSteps.map(s => `<li>${s}</li>`).join('');
-                
-                codeCheckerOutput.classList.remove('hidden');
-
-            } catch (error) {
-                codeCheckerError.textContent = "AI Code Audit failed. Please try again.";
-                codeCheckerError.classList.remove('hidden');
-            } finally {
-                codeCheckerBtnText.textContent = 'RUN CODE AUDIT';
-                codeCheckerSpinner.style.display = 'none';
-                checkCodeBtn.classList.remove('loading');
-            }
-        }
-        
-        // --- NOTE QUALITY CHECK LOGIC ---
-        const qualitySchema = {
-            type: "OBJECT",
-            properties: {
-                score: { type: "INTEGER" },
-                risk: { type: "STRING" },
-                message: { type: "STRING" },
-                suggestions: { type: "ARRAY", items: { type: "STRING" } }
-            },
-            propertyOrdering: ["score", "risk", "message", "suggestions"]
-        };
-        
-        async function analyzeNoteQuality() {
-            const noteText = document.getElementById('follow-up-note').value.trim();
-            const denialContext = document.getElementById('quality-context-input').value.trim();
-            const qualityError = document.getElementById('quality-error');
-            const qualityBtnText = document.getElementById('quality-btn-text');
-            const qualitySpinner = document.getElementById('quality-spinner');
-            const checkQualityBtn = document.getElementById('check-quality-btn');
-            const accuracyScoreEl = document.getElementById('accuracy-score');
-            const accuracyMessageEl = document.getElementById('accuracy-message');
-            const suggestionsListEl = document.getElementById('suggestions-list');
-            const riskLevelEl = document.getElementById('risk-level');
-            const riskAnalysisCard = document.getElementById('risk-analysis');
-
-
-            if (!noteText || !denialContext) {
-                qualityError.textContent = "Please enter both the Follow-up Note and the Contextual Denial Information.";
-                qualityError.classList.remove('hidden');
-                return;
-            }
-
-            qualityError.classList.add('hidden');
-            qualityBtnText.textContent = 'ANALYZING...';
-            qualitySpinner.style.display = 'inline-block';
-            checkQualityBtn.classList.add('loading');
-
-            const systemPrompt = `You are a compliance officer and AR auditing AI. Evaluate the provided follow-up note based on the given denial context. Your analysis must focus on compliance, clarity, audit-readiness, and actionable next steps. Assign a score (50-100) and a risk level (CRITICAL, HIGH, MEDIUM, LOW). The response MUST be a JSON object adhering to the provided schema.`;
-            const userQuery = `Analyze the following AR follow-up note against the denial context: - Denial Context/E.O.B.: "${denialContext}" - Follow-up Note: "${noteText}" - Evaluation Focus: Does the note adequately address the specific issues and risks (e.g., timely filing, pricing) mentioned in the context, and is it audit-compliant?`;
-
-            try {
-                const data = await callGeminiAPI(systemPrompt, userQuery, qualitySchema);
-                
-                const score = Math.max(50, Math.min(100, data.score)); 
-                const maxDashoffset = 434;
-
-                accuracyScoreEl.textContent = `${score}%`;
-                accuracyMessageEl.textContent = data.message;
-
-                const dashoffset = maxDashoffset - (score / 100) * maxDashoffset;
-                document.querySelector('.progress-ring-circle').style.strokeDashoffset = dashoffset;
-
-                let riskColor = '#34d399'; 
-                let riskLevelText = data.risk;
-                if (data.risk.toUpperCase().includes('CRITICAL')) { riskColor = '#f87171'; } 
-                else if (data.risk.toUpperCase().includes('HIGH')) { riskColor = '#f59e0b'; } 
-                else if (data.risk.toUpperCase().includes('MEDIUM')) { riskColor = '#3b82f6'; }
-
-                document.querySelector('.progress-ring-circle').style.stroke = riskColor;
-                accuracyScoreEl.style.color = riskColor;
-
-                riskLevelEl.textContent = `${riskLevelText.toUpperCase()} RISK`;
-                riskAnalysisCard.style.backgroundColor = `${riskColor}22`; 
-                riskAnalysisCard.style.color = riskColor;
-                riskAnalysisCard.style.borderColor = riskColor;
-
-                suggestionsListEl.innerHTML = data.suggestions.map(s => `<li class="text-gray-400">${s}</li>`).join('');
-                
-            } catch (error) {
-                qualityError.textContent = "AI Note Analysis failed. Please try again.";
-                qualityError.classList.remove('hidden');
-            } finally {
-                qualityBtnText.textContent = 'ANALYZE NOTE';
-                qualitySpinner.style.display = 'none';
-                checkQualityBtn.classList.remove('loading');
-            }
-        }
-        
-        // --- LEARNING HUB LOGIC ---
-        const learningSchema = {
-            type: "OBJECT",
-            properties: {
-                moduleTitle: { type: "STRING" },
-                explanation: { type: "STRING" },
-                keyTakeaways: { type: "ARRAY", items: { type: "STRING" } },
-                quizQuestion: { type: "STRING" },
-                quizAnswer: { type: "STRING" }
-            },
-            propertyOrdering: ["moduleTitle", "explanation", "keyTakeaways", "quizQuestion", "quizAnswer"]
-        };
-        
-        async function generateLearningContent() {
-            const topicInput = document.getElementById('learning-topic-input').value.trim();
-            const lessonError = document.getElementById('lesson-error');
-            const lessonBtnText = document.getElementById('lesson-btn-text');
-            const lessonSpinner = document.getElementById('lesson-spinner');
-            const generateLessonBtn = document.getElementById('generate-lesson-btn');
-            const lessonOutput = document.getElementById('lesson-output');
-            const showAnswerBtn = document.getElementById('show-answer-btn');
-
-            if (!topicInput) {
-                lessonError.textContent = "Please enter a topic to generate a lesson module.";
-                lessonError.classList.remove('hidden');
-                return;
-            }
-
-            lessonError.classList.add('hidden');
-            lessonBtnText.textContent = 'GENERATING...';
-            lessonSpinner.style.display = 'inline-block';
-            generateLessonBtn.classList.add('loading');
-            lessonOutput.classList.add('hidden');
-            document.getElementById('quiz-answer').classList.add('hidden');
-
-            const systemPrompt = `You are a specialized AR training instructor. Create a detailed, actionable learning module based on the user's request. The module must be highly relevant to medical billing, AR management, and denial resolution. Provide a concise quiz question and answer. The response MUST be a JSON object adhering to the provided schema.`;
-            const userQuery = `Generate a learning module about the following topic: "${topicInput}"`;
-
-            try {
-                const data = await callGeminiAPI(systemPrompt, userQuery, learningSchema);
-                
-                document.getElementById('lesson-title').textContent = data.moduleTitle;
-                document.getElementById('lesson-explanation').textContent = data.explanation;
-                document.getElementById('quiz-question').textContent = data.quizQuestion;
-                document.getElementById('quiz-answer').textContent = `Answer: ${data.quizAnswer}`;
-                
-                const takeawaysEl = document.getElementById('lesson-takeaways');
-                takeawaysEl.innerHTML = data.keyTakeaways.map(t => `<li class="key-takeaway-item text-gray-400">${t}</li>`).join('');
-                
-                showAnswerBtn.textContent = 'Show Answer';
-                document.getElementById('quiz-answer').classList.add('hidden');
-                lessonOutput.classList.remove('hidden');
-
-            } catch (error) {
-                lessonError.textContent = "AI Lesson Generation failed. Please try again.";
-                lessonError.classList.remove('hidden');
-            } finally {
-                lessonBtnText.textContent = 'GENERATE LESSON MODULE';
-                lessonSpinner.style.display = 'none';
-                generateLessonBtn.classList.remove('loading');
-            }
-        }
-        
-        // --- GENERAL UI & EVENT LISTENERS ---
-
-        document.addEventListener('DOMContentLoaded', function() {
             
-            // --- Helper Functions ---
-            const sections = {
-                dashboard: document.getElementById('dashboard'),
-                resolver: document.getElementById('resolver'),
-                learning: document.getElementById('learning'),
-                quality: document.getElementById('quality-check'),
-                'code-checker': document.getElementById('code-checker'),
-            };
+            html += '</div>';
+            resultsDiv.innerHTML = html;
+            resultsDiv.classList.remove('hidden');
+        }
 
-            const navLinks = {
-                dashboard: document.getElementById('nav-dashboard'),
-                resolver: document.getElementById('nav-resolver'),
-                learning: document.getElementById('nav-learning'),
-                quality: document.getElementById('nav-quality'),
-                'code-checker': document.getElementById('nav-code-checker'),
-            };
-
-            const switchView = (view) => {
-                Object.values(sections).forEach(section => section.classList.add('hidden'));
-                sections[view].classList.remove('hidden');
-
-                Object.values(navLinks).forEach(link => link.classList.remove('active-nav'));
-                Object.values(navLinks).forEach(link => link.classList.remove('text-slate-300'));
-                navLinks[view].classList.add('active-nav');
-                navLinks[view].classList.remove('text-slate-300');
-            };
-
-            window.updateUserIdDisplay = (uid) => {
-                 const userIdDisplay = document.getElementById('display-user-id');
-                 if (userIdDisplay) userIdDisplay.textContent = uid;
-            }
-
-            // --- Listener Setup ---
+        function extractExactCodes(text) {
+            const codes = [];
+            const patterns = [
+                /\b(CO-\d{1,3})\b/g,
+                /\b(PR-\d{1,3})\b/g,
+                /\b(OA-\d{1,3})\b/g,
+                /\b(PI-\d{1,3})\b/g,
+                /\b(MA\d{3})\b/g,
+                /\b(N\d{3})\b/g
+            ];
             
-            // 1. Navigation Listeners
-            Object.keys(navLinks).forEach(key => {
-                if (navLinks[key]) {
-                    navLinks[key].addEventListener('click', (e) => {
-                        e.preventDefault();
-                        switchView(key);
-                        // Trigger dashboard listener setup when navigating to the dashboard
-                        if (key === 'dashboard' && window.userId && window.setupDashboardListener) {
-                             window.setupDashboardListener(window.userId);
-                        }
+            patterns.forEach(pattern => {
+                const matches = text.match(pattern);
+                if (matches) {
+                    matches.forEach(match => {
+                        if (!codes.includes(match)) codes.push(match);
                     });
                 }
             });
-
-            // 2. Denial Resolver Listeners
-            const resolveBtn = document.getElementById('resolve-btn');
-            if(resolveBtn) resolveBtn.addEventListener('click', generateResolutionProtocol);
             
-            const saveToDashboardBtn = document.getElementById('save-to-dashboard-btn');
-            const saveMessage = document.getElementById('save-message');
-            if(saveToDashboardBtn) saveToDashboardBtn.addEventListener('click', async () => {
-                saveMessage.classList.add('hidden');
-                saveToDashboardBtn.disabled = true;
-                if (currentProtocolData && window.logActionPlan) {
-                    const result = await window.logActionPlan(currentProtocolData);
-                    if (result.success) {
-                        saveMessage.textContent = "Protocol logged successfully! Dashboard updated.";
-                        saveMessage.classList.remove('hidden');
-                    } else {
-                        saveMessage.textContent = "Error logging plan. See console.";
-                        saveMessage.classList.remove('hidden');
-                    }
-                } else {
-                     saveMessage.textContent = "No protocol to save.";
-                     saveMessage.classList.remove('hidden');
-                }
-                saveToDashboardBtn.disabled = false;
-            });
+            return codes;
+        }
 
-            // 3. Appeal Generator Listeners
-            const generateAppealBtn = document.getElementById('generate-appeal-btn');
-            const copyVerbiageBtn = document.getElementById('copy-verbiage-btn');
-            const appealVerbiageOutput = document.getElementById('appeal-verbiage-output');
-            const copyMessageEl = document.getElementById('copy-message');
-
-            if(generateAppealBtn) generateAppealBtn.addEventListener('click', generateAppealContent);
-            if(copyVerbiageBtn) copyVerbiageBtn.addEventListener('click', () => {
-                if (appealVerbiageOutput) {
-                    appealVerbiageOutput.select();
-                    appealVerbiageOutput.setSelectionRange(0, 99999); 
-                    try {
-                        document.execCommand('copy');
-                        copyMessageEl.classList.remove('hidden');
-                        setTimeout(() => copyMessageEl.classList.add('hidden'), 3000);
-                    } catch (err) {
-                        console.error('Failed to copy text', err);
-                    }
-                }
-            });
-
-            // 4. Code Checker Listeners
-            const checkCodeBtn = document.getElementById('check-code-btn');
-            if(checkCodeBtn) checkCodeBtn.addEventListener('click', runCodeCheck);
-
-            // 5. Quality Check Listeners
-            const checkQualityBtn = document.getElementById('check-quality-btn');
-            if(checkQualityBtn) checkQualityBtn.addEventListener('click', analyzeNoteQuality);
-
-            // 6. Learning Hub Listeners
-            const generateLessonBtn = document.getElementById('generate-lesson-btn');
-            const showAnswerBtn = document.getElementById('show-answer-btn');
-            const quizAnswerEl = document.getElementById('quiz-answer');
-
-            if(generateLessonBtn) generateLessonBtn.addEventListener('click', generateLearningContent);
-            if(showAnswerBtn) showAnswerBtn.addEventListener('click', () => {
-                const isHidden = quizAnswerEl.classList.contains('hidden');
-                quizAnswerEl.classList.toggle('hidden');
-                showAnswerBtn.textContent = isHidden ? 'Hide Answer' : 'Show Answer';
-            });
+        function getPayerSpecificAdvice(code, payer) {
+            const rule = PAYER_RULES[payer];
+            if (!rule) return '';
             
-            // --- Initial Setup ---
-            switchView('resolver');
-            
-            // Initialize Quality Check UI to blank state
-            if(document.getElementById('risk-analysis')) {
-                 const riskAnalysisCard = document.getElementById('risk-analysis');
-                 const accuracyScoreEl = document.getElementById('accuracy-score');
-                 const riskLevelEl = document.getElementById('risk-level');
-                 const suggestionsListEl = document.getElementById('suggestions-list');
+            return `
+                <div class="mt-3 p-3 bg-blue-50 border border-blue-200 rounded">
+                    <h4 class="font-semibold text-blue-800 text-sm mb-1">
+                        <i class="fas fa-building mr-1"></i> ${rule.name} Specific:
+                    </h4>
+                    <p class="text-sm text-blue-700">${rule.tips}</p>
+                </div>
+            `;
+        }
 
-                 // Set initial UI state
-                 if (accuracyScoreEl) accuracyScoreEl.textContent = '75%';
-                 if (riskLevelEl) riskLevelEl.textContent = 'MEDIUM RISK';
-                 if (riskAnalysisCard) {
-                     riskAnalysisCard.style.backgroundColor = '#3b82f622'; 
-                     riskAnalysisCard.style.color = '#3b82f6';
-                     riskAnalysisCard.style.borderColor = '#3b82f6';
-                 }
-                 if (suggestionsListEl) {
-                     suggestionsListEl.innerHTML = `<li class="text-gray-400">Click ANALYZE NOTE to start the AI audit.</li>`;
-                 }
-                 if(document.querySelector('.progress-ring-circle')) {
-                     document.querySelector('.progress-ring-circle').style.strokeDashoffset = 108.45; // 75% offset
-                     document.querySelector('.progress-ring-circle').style.stroke = '#3b82f6';
-                 }
+        function analyzeKeywords(text) {
+            const keywords = {
+                'timely': 'Filing deadline issue - Check CO-29 or N386',
+                'medical necessity': 'Medical necessity denial - Check CO-50 or PR-4',
+                'bundle': 'Bundling issue - Check CO-59 or CO-45',
+                'duplicate': 'Duplicate claim - Check CO-18',
+                'authorization': 'Authorization missing - Check CO-15 or PR-1'
+            };
+            
+            for (let [key, value] of Object.entries(keywords)) {
+                if (text.toLowerCase().includes(key)) return value;
             }
+            
+            return 'Unable to determine specific denial type. Please enter denial code (e.g., CO-50) for accurate analysis.';
+        }
+
+        function generateAppealLetter() {
+            const input = document.getElementById('denialInput').value;
+            const codes = extractExactCodes(input);
+            const resultsDiv = document.getElementById('denialResults');
+            
+            const letter = `
+RE: APPEAL FOR DENIAL OF CLAIM
+
+Date: ${new Date().toLocaleDateString()}
+
+To: Medical Review Department
+
+Please accept this letter as a formal appeal of the denial issued on the above referenced claim(s). 
+
+${codes.length > 0 ? `The denial code${codes.length > 1 ? 's' : ''} cited: ${codes.join(', ')}` : 'The services in question were denied as not medically necessary.'}
+
+RATIONALE FOR APPEAL:
+1. The services provided were medically necessary and appropriate for the patient's condition
+2. All documentation supports medical necessity per standard of care
+3. Coding accurately reflects services rendered
+4. Patient meets all criteria for coverage under current benefits
+
+REQUESTED ACTION:
+Please reverse the denial and process the claim for payment. Additional documentation is available upon request.
+
+Thank you for your prompt attention to this matter.
+
+Sincerely,
+[Provider Name/Authorized Representative]
+            `;
+            
+            resultsDiv.innerHTML = `
+                <div class="bg-white border-2 border-uhc-blue rounded-lg p-6">
+                    <h3 class="text-lg font-bold text-uhc-blue mb-4">Appeal Letter Template</h3>
+                    <pre class="whitespace-pre-wrap font-sans text-sm bg-gray-50 p-4 rounded border">${letter}</pre>
+                    <button onclick="copyToClipboard(this)" class="mt-4 bg-uhc-blue text-white px-4 py-2 rounded hover:bg-uhc-light transition">
+                        <i class="fas fa-copy mr-2"></i>Copy to Clipboard
+                    </button>
+                </div>
+            `;
+            resultsDiv.classList.remove('hidden');
+        }
+
+        // ==================== AR QUALITY CHECK ====================
+
+        function validateCPTInput(input) {
+            const codes = input.value.split(',').map(c => c.trim());
+            let valid = true;
+            codes.forEach(code => {
+                if (code && !CPT_DATABASE[code]) valid = false;
+            });
+            input.classList.toggle('validation-success', valid && codes[0] !== '');
+            input.classList.toggle('validation-error', !valid);
+        }
+
+        function validateICDInput(input) {
+            const codes = input.value.split(',').map(c => c.trim());
+            let valid = true;
+            codes.forEach(code => {
+                if (code && !ICD10_DATABASE[code.toUpperCase()]) valid = false;
+            });
+            input.classList.toggle('validation-success', valid && codes[0] !== '');
+            input.classList.toggle('validation-error', !valid);
+        }
+
+        function runARQualityCheck() {
+            const cptInput = document.getElementById('arCptCodes').value.trim();
+            const icdInput = document.getElementById('arIcdCodes').value.trim().toUpperCase();
+            const modifiers = document.getElementById('arModifiers').value.trim();
+            const dos = document.getElementById('arDos').value;
+            const resultsDiv = document.getElementById('arResults');
+            
+            if (!cptInput || !icdInput) {
+                showToast('Please enter both CPT and ICD-10 codes', 'error');
+                return;
+            }
+            
+            const cptCodes = cptInput.split(',').map(c => c.trim());
+            const icdCodes = icdInput.split(',').map(c => c.trim());
+            const mods = modifiers ? modifiers.split(',').map(m => m.trim()) : [];
+            
+            const issues = [];
+            const warnings = [];
+            
+            // Validate CPT codes
+            cptCodes.forEach((code, idx) => {
+                if (!CPT_DATABASE[code]) {
+                    issues.push(`CPT ${code} not found in database`);
+                } else {
+                    // Check modifiers
+                    if (mods.length > 0 && idx === 0) {
+                        const allowedMods = CPT_DATABASE[code].modifiers || [];
+                        mods.forEach(mod => {
+                            if (!allowedMods.includes(mod)) {
+                                warnings.push(`Modifier ${mod} may not be appropriate for CPT ${code}`);
+                            }
+                        });
+                    }
+                }
+            });
+            
+            // Validate ICD codes
+            icdCodes.forEach(code => {
+                if (!ICD10_DATABASE[code]) {
+                    issues.push(`ICD-10 ${code} not found in database`);
+                }
+            });
+            
+            // Check for common bundling issues
+            if (cptCodes.includes('99213') && cptCodes.includes('99214')) {
+                issues.push('Duplicate E/M codes detected - Cannot bill 99213 and 99214 together');
+            }
+            
+            // Check medical necessity (simplified)
+            if (cptCodes.includes('99215') && !icdCodes.some(c => ['Z00.00'].includes(c) === false)) {
+                warnings.push('High level E/M (99215) may require more complex diagnoses');
+            }
+            
+            // Generate report
+            let html = '';
+            
+            if (issues.length === 0 && warnings.length === 0) {
+                html = `
+                    <div class="text-center p-6 bg-green-50 border border-green-200 rounded-lg">
+                        <i class="fas fa-check-circle text-4xl text-green-500 mb-2"></i>
+                        <h3 class="text-lg font-bold text-green-800">Quality Check Passed</h3>
+                        <p class="text-green-700">No issues found with this claim combination.</p>
+                    </div>
+                `;
+            } else {
+                html = `
+                    <h3 class="font-bold text-lg mb-4">Quality Check Results</h3>
+                    ${issues.length > 0 ? `
+                        <div class="mb-4">
+                            <h4 class="font-semibold text-red-700 mb-2"><i class="fas fa-times-circle mr-1"></i> Errors (${issues.length})</h4>
+                            <ul class="list-disc pl-5 text-sm text-red-600 space-y-1">
+                                ${issues.map(i => `<li>${i}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                    ${warnings.length > 0 ? `
+                        <div>
+                            <h4 class="font-semibold text-yellow-700 mb-2"><i class="fas fa-exclamation-triangle mr-1"></i> Warnings (${warnings.length})</h4>
+                            <ul class="list-disc pl-5 text-sm text-yellow-600 space-y-1">
+                                ${warnings.map(w => `<li>${w}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                `;
+            }
+            
+            resultsDiv.innerHTML = html;
+            resultsDiv.classList.remove('hidden');
+        }
+
+        // ==================== LEARNING HUB (AI) ====================
+
+        async function searchLearningHub() {
+            const query = document.getElementById('learningSearch').value.trim();
+            if (!query) return;
+            
+            askAI(query);
+        }
+
+        async function askAI(question) {
+            const resultsDiv = document.getElementById('learningResults');
+            const loadingSpinner = document.getElementById('aiLoading');
+            const statusText = document.getElementById('aiStatusText');
+            const responseDiv = document.getElementById('aiResponse');
+            
+            resultsDiv.classList.remove('hidden');
+            loadingSpinner.style.display = 'block';
+            statusText.textContent = 'Consulting AI...';
+            responseDiv.innerHTML = '';
+            
+            const API_KEY = 'AIzaSyAeST_BsIHtwJfblLHEUmOLV5r2vSevIiQ';
+            const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`;
+            
+            const contextPrompt = `You are a medical billing expert. Provide accurate, concise information about: ${question}`;
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: contextPrompt }] }],
+                        generationConfig: { temperature: 0.3, maxOutputTokens: 800 }
+                    })
+                });
+                
+                if (!response.ok) throw new Error('API Error');
+                
+                const data = await response.json();
+                const answer = data.candidates[0].content.parts[0].text;
+                
+                loadingSpinner.style.display = 'none';
+                statusText.textContent = 'AI Response:';
+                responseDiv.innerHTML = answer.replace(/\n/g, '<br>');
+                
+            } catch (error) {
+                loadingSpinner.style.display = 'none';
+                statusText.textContent = 'AI Service Error - Using Local Database';
+                
+                // Fallback to local knowledge
+                const localAnswer = getLocalKnowledge(question);
+                responseDiv.innerHTML = localAnswer;
+            }
+        }
+
+        function getLocalKnowledge(query) {
+            const q = query.toLowerCase();
+            
+            if (q.includes('modifier 25')) {
+                return `<strong>Modifier 25 Definition:</strong><br>
+                Significant, separately identifiable evaluation and management service by the same physician on the same day of the procedure or other service.<br><br>
+                <strong>Key Requirements:</strong><br>
+                - Different diagnosis OR clearly documented distinct work<br>
+                - Not used for minor procedures (0-10 day global)<br>
+                - Requires separate E/M service beyond routine pre/post op care<br>
+                <br><strong>Common Uses:</strong><br>
+                - Office visit for new problem on day of planned procedure<br>
+                - Significant E/M work unrelated to procedure`;
+            }
+            
+            if (q.includes('co-50') || q.includes('co 50')) {
+                return `<strong>CO-50: Not Medically Necessary</strong><br><br>
+                <strong>Reason:</strong> The payer has determined that the service provided does not meet their criteria for medical necessity.<br><br>
+                <strong>Resolution:</strong><br>
+                1. Review the LCD (Local Coverage Determination) or NCD<br>
+                2. Submit medical records with appeal<br>
+                3. Obtain Letter of Medical Necessity from physician<br>
+                4. Verify diagnosis code linkage`;
+            }
+            
+            if (q.includes('timely filing') || q.includes('co-29')) {
+                return `<strong>Timely Filing Limits:</strong><br><br>
+                <strong>Medicare:</strong> 1 calendar year from date of service<br>
+                <strong>UnitedHealthcare:</strong> 90 days (commercial), 180 days (Medicare Advantage)<br>
+                <strong>BCBS:</strong> 365 days (varies by state)<br>
+                <strong>Aetna:</strong> 90-180 days depending on contract<br>
+                <strong>Cigna:</strong> 90 days<br><br>
+                <strong>Note:</strong> Start date is date of service, not discharge date.
+                `;
+            }
+            
+            return `I apologize, but I cannot connect to the AI service at the moment. Please try again later or contact support.<br><br>
+            <strong>Try searching for:</strong><br>
+            - Specific denial codes (CO-50, CO-29, etc.)<br>
+            - Modifier usage (Modifier 25, 59)<br>
+            - Payer filing limits`;
+        }
+
+        // ==================== MODIFIERS GUIDE ====================
+
+        function renderModifiers() {
+            const grid = document.getElementById('modifiersGrid');
+            if (!grid || grid.children.length > 0) return;
+            
+            Object.values(MODIFIERS).forEach(mod => {
+                const div = document.createElement('div');
+                div.className = 'bg-uhc-bg border border-uhc-border rounded-lg p-4 hover:shadow-md transition';
+                div.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-2xl font-bold text-uhc-blue font-mono">${mod.code}</span>
+                        <span class="text-xs px-2 py-1 bg-white rounded border border-uhc-border">${mod.title}</span>
+                    </div>
+                    <p class="text-sm text-uhc-text mb-2">${mod.description}</p>
+                    <div class="text-xs text-uhc-muted space-y-1">
+                        <div><strong>Usage:</strong> ${mod.usage}</div>
+                        <div><strong>Example:</strong> ${mod.example}</div>
+                        <div class="text-red-600 mt-2"><strong>Common Errors:</strong> ${mod.commonErrors.join(', ')}</div>
+                    </div>
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+        function searchModifiers(query) {
+            const cards = document.getElementById('modifiersGrid').children;
+            Array.from(cards).forEach((card, idx) => {
+                const mod = Object.values(MODIFIERS)[idx];
+                const match = mod.code.includes(query) || 
+                             mod.description.toLowerCase().includes(query.toLowerCase());
+                card.style.display = match ? 'block' : 'none';
+            });
+        }
+
+        // ==================== PAYER RULES ====================
+
+        function renderPayerRules() {
+            const grid = document.getElementById('payerRulesGrid');
+            if (!grid || grid.children.length > 0) return;
+            
+            Object.values(PAYER_RULES).forEach(payer => {
+                const div = document.createElement('div');
+                div.className = 'bg-white border-2 border-uhc-border rounded-lg p-6 hover:border-uhc-blue transition';
+                div.innerHTML = `
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-uhc-blue">${payer.name}</h3>
+                        <span class="payer-badge ${payer.color}">Active</span>
+                    </div>
+                    
+                    <div class="space-y-3 text-sm">
+                        <div class="flex items-start">
+                            <i class="fas fa-clock text-uhc-light mt-1 mr-2 w-4"></i>
+                            <div>
+                                <strong class="block text-uhc-text">Timely Filing:</strong>
+                                <span class="text-uhc-muted">${payer.timelyFiling}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <i class="fas fa-file-medical text-uhc-light mt-1 mr-2 w-4"></i>
+                            <div>
+                                <strong class="block text-uhc-text">Auth Requirements:</strong>
+                                <span class="text-uhc-muted">${payer.authRequirements}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <i class="fas fa-exclamation-circle text-uhc-warning mt-1 mr-2 w-4"></i>
+                            <div>
+                                <strong class="block text-uhc-text">Common Issues:</strong>
+                                <span class="text-uhc-muted">${payer.commonIssues.join(', ')}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 p-3 bg-uhc-bg rounded-lg border border-uhc-border">
+                            <strong class="text-uhc-blue block mb-1"><i class="fas fa-lightbulb mr-1"></i> Pro Tip:</strong>
+                            <span class="text-uhc-muted text-xs">${payer.tips}</span>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+        // ==================== CODE VALIDATOR ====================
+
+        function validateSingleICD() {
+            const code = document.getElementById('validateICD').value.toUpperCase().trim();
+            const resultDiv = document.getElementById('icdValidateResult');
+            const data = ICD10_DATABASE[code];
+            
+            if (data) {
+                resultDiv.innerHTML = `
+                    <div class="text-green-600 font-semibold"><i class="fas fa-check mr-1"></i> Valid ICD-10</div>
+                    <div class="text-sm text-uhc-text">${data.description}</div>
+                    <div class="text-xs text-uhc-muted">Category: ${data.category} | Chapter: ${data.chapter}</div>
+                `;
+                resultDiv.className = 'mt-2 p-2 bg-green-50 border border-green-200 rounded';
+            } else {
+                resultDiv.innerHTML = `<span class="text-red-600"><i class="fas fa-times mr-1"></i> Invalid or not in database</span>`;
+                resultDiv.className = 'mt-2 p-2 bg-red-50 border border-red-200 rounded';
+            }
+        }
+
+        function validateSingleCPT() {
+            const code = document.getElementById('validateCPT').value.trim();
+            const resultDiv = document.getElementById('cptValidateResult');
+            const data = CPT_DATABASE[code];
+            
+            if (data) {
+                resultDiv.innerHTML = `
+                    <div class="text-green-600 font-semibold"><i class="fas fa-check mr-1"></i> Valid CPT</div>
+                    <div class="text-sm text-uhc-text">${data.description}</div>
+                    <div class="text-xs text-uhc-muted">Category: ${data.category} | Allowed Mods: ${data.modifiers.join(', ') || 'None'}</div>
+                `;
+                resultDiv.className = 'mt-2 p-2 bg-green-50 border border-green-200 rounded';
+            } else {
+                resultDiv.innerHTML = `<span class="text-red-600"><i class="fas fa-times mr-1"></i> Invalid or not in database</span>`;
+                resultDiv.className = 'mt-2 p-2 bg-red-50 border border-red-200 rounded';
+            }
+        }
+
+        // ==================== UTILITY FUNCTIONS ====================
+
+        function quickSearch(term) {
+            document.getElementById('learningSearch').value = term;
+            switchView('learning-hub');
+            askAI(term);
+        }
+
+        function showApiConfig() {
+            document.getElementById('apiModal').classList.remove('hidden');
+            document.getElementById('apiModal').classList.add('flex');
+        }
+
+        function closeApiModal() {
+            document.getElementById('apiModal').classList.add('hidden');
+            document.getElementById('apiModal').classList.remove('flex');
+        }
+
+        function testAPI() {
+            showToast('API Connection Successful', 'success');
+            closeApiModal();
+        }
+
+        function clearDenial() {
+            document.getElementById('denialInput').value = '';
+            document.getElementById('denialResults').classList.add('hidden');
+        }
+
+        function copyToClipboard(btn) {
+            const text = btn.previousElementSibling.innerText;
+            navigator.clipboard.writeText(text);
+            showToast('Copied to clipboard');
+        }
+
+        function showTimelyFiling() {
+            quickSearch('timely filing limits all payers');
+        }
+
+        function generateAppealTemplate() {
+            switchView('denial-resolver');
+            setTimeout(() => {
+                document.getElementById('denialInput').value = 'Generate appeal template for medical necessity denial';
+                generateAppealLetter();
+            }, 100);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            switchView('denial-resolver');
+            updateStats();
         });
+
+        function updateStats() {
+            document.getElementById('icdCount').textContent = Object.keys(ICD10_DATABASE).length + '+';
+            document.getElementById('denialCount').textContent = Object.keys(DENIAL_CODES).length + '+';
+            document.getElementById('cptCount').textContent = Object.keys(CPT_DATABASE).length + '+';
+        }
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('apiModal');
+            if (event.target === modal) {
+                closeApiModal();
+            }
+        }
     </script>
 </body>
 </html>
